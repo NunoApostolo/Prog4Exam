@@ -1,15 +1,23 @@
 #include "SceneManager.h"
 #include "Scene.h"
 
-void dae::SceneManager::Update()
+void SceneManager::Update()
 {
 	for(auto& scene : m_scenes)
 	{
-		scene->Update();
+		scene.get()->Update();
 	}
 }
 
-void dae::SceneManager::Render()
+void SceneManager::FixedUpdate()
+{
+	for (auto& scene : m_scenes)
+	{
+		scene->FixedUpdate();
+	}
+}
+
+void SceneManager::Render()
 {
 	for (const auto& scene : m_scenes)
 	{
@@ -17,9 +25,17 @@ void dae::SceneManager::Render()
 	}
 }
 
-dae::Scene& dae::SceneManager::CreateScene(const std::string& name)
+void SceneManager::ClearScenes()
+{
+	for (const auto& scene : m_scenes) {
+		scene->RemoveAll();
+	}
+}
+
+Scene& SceneManager::CreateScene(const std::string& name)
 {
 	const auto& scene = std::shared_ptr<Scene>(new Scene(name));
+	curScene = scene;
 	m_scenes.push_back(scene);
 	return *scene;
 }

@@ -5,11 +5,13 @@
 #include "Font.h"
 #include "Texture2D.h"
 
-dae::TextObject::TextObject(const std::string& text, std::shared_ptr<Font> font) 
-	: m_needsUpdate(true), m_text(text), m_font(std::move(font)), m_textTexture(nullptr)
-{ }
+void TextObject::SetText(const std::string& text, std::shared_ptr<Font> font) 
+{ 
+	m_text = text;
+	m_font = font;
+}
 
-void dae::TextObject::Update()
+void TextObject::Update()
 {
 	if (m_needsUpdate)
 	{
@@ -30,25 +32,25 @@ void dae::TextObject::Update()
 	}
 }
 
-void dae::TextObject::Render() const
+void TextObject::Render() const
 {
 	if (m_textTexture != nullptr)
 	{
-		const auto& pos = m_transform.GetPosition();
+		const auto& pos = gameObject->transform->position;
 		Renderer::GetInstance().RenderTexture(*m_textTexture, pos.x, pos.y);
 	}
 }
 
 // This implementation uses the "dirty flag" pattern
-void dae::TextObject::SetText(const std::string& text)
+void TextObject::SetText(const std::string& text)
 {
 	m_text = text;
 	m_needsUpdate = true;
 }
 
-void dae::TextObject::SetPosition(const float x, const float y)
+void TextObject::SetPosition(const float x, const float y)
 {
-	m_transform.SetPosition(x, y, 0.0f);
+	gameObject->transform->SetPosition(x, y, 0.f);
 }
 
 

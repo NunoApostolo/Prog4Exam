@@ -1,13 +1,13 @@
 #include "Scene.h"
 #include "GameObject.h"
+#include "TextObject.h" // temp
+#include "Time.h"
 
 #include <algorithm>
 
-using namespace dae;
-
 unsigned int Scene::m_idCounter = 0;
 
-Scene::Scene(const std::string& name) : m_name(name) {}
+Scene::Scene(const std::string& name) : m_name(name), m_objects{} {}
 
 Scene::~Scene() = default;
 
@@ -30,8 +30,17 @@ void Scene::Update()
 {
 	for(auto& object : m_objects)
 	{
-		object->Update();
+		object.get()->Update();
+		//temp
+		if (object->name == "FPS") {
+			object->GetComponent<TextObject>()->SetText(std::to_string(1 / Time::deltaTime));
+		}
 	}
+}
+
+void Scene::FixedUpdate()
+{
+
 }
 
 void Scene::Render() const

@@ -4,12 +4,21 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <chrono>
+#include <thread>
 #include "Minigin.h"
 #include "InputManager.h"
 #include "SceneManager.h"
+#include "Scene.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
+#include "Time.h"
+#include "Minigin.h"
+#include "TextObject.h"
+#include "TextureRenderer.h"
+#include <iostream>
 
+using namespace std::chrono;
 SDL_Window* g_window{};
 
 void PrintSDLVersion()
@@ -40,7 +49,7 @@ void PrintSDLVersion()
 		version.major, version.minor, version.patch);
 }
 
-dae::Minigin::Minigin(const std::string &dataPath)
+Minigin::Minigin(const std::string &dataPath)
 {
 	PrintSDLVersion();
 	
@@ -67,15 +76,17 @@ dae::Minigin::Minigin(const std::string &dataPath)
 	ResourceManager::GetInstance().Init(dataPath);
 }
 
-dae::Minigin::~Minigin()
+Minigin::~Minigin()
 {
+	ResourceManager::GetInstance().UnloadUnusedResources();
+	SceneManager::GetInstance().ClearScenes();
 	Renderer::GetInstance().Destroy();
 	SDL_DestroyWindow(g_window);
 	g_window = nullptr;
 	SDL_Quit();
 }
 
-void dae::Minigin::Run(const std::function<void()>& load)
+void Minigin::Run(const std::function<void()>& load)
 {
 	load();
 
@@ -83,12 +94,35 @@ void dae::Minigin::Run(const std::function<void()>& load)
 	auto& sceneManager = SceneManager::GetInstance();
 	auto& input = InputManager::GetInstance();
 
+	nanoseconds preMilli = duration_cast<nanoseconds>(high_resolution_clock().now().time_since_epoch());
+	nanoseconds lag{};
+	
+	const int frameRate{ 60 };
+
 	// todo: this update loop could use some work.
 	bool doContinue = true;
 	while (doContinue)
 	{
+		nanoseconds postMilli = duration_cast<nanoseconds>(high_resolution_clock().now().time_since_epoch());
+		Time::SetDeltaTime(duration<float>(postMilli - preMilli).count());
+		preMilli = postMilli;
+
+		lag += duration_cast<nanoseconds>(postMilli - preMilli);
+		if (lag >= 1000ns) {
+			lag -= 1000ns;
+			sceneManager.FixedUpdate();
+		}
+
 		doContinue = input.ProcessInput();
 		sceneManager.Update();
 		renderer.Render();
+
+		postMilli = duration_cast<nanoseconds>(high_resolution_clock().now().time_since_epoch());
+
+		auto wait = postMilli + milliseconds(1000/frameRate) - high_resolution_clock::now().time_since_epoch();
+
+		std::cout << wait << std::endl;
+
+		if (wait > 0ms) std::this_thread::sleep_for(wait);
 	}
 }

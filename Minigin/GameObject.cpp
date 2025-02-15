@@ -1,24 +1,154 @@
-#include <string>
 #include "GameObject.h"
-#include "ResourceManager.h"
-#include "Renderer.h"
+//#include "SpriteRenderer.h"
+//#include "Collider.h"
+#include "SceneManager.h"
+#include "Scene.h"
+#include "BaseComponent.h"
+#include "Transform.h"
+#include "TextureRenderer.h"
 
-dae::GameObject::~GameObject() = default;
-
-void dae::GameObject::Update(){}
-
-void dae::GameObject::Render() const
+GameObject::GameObject(std::string name, const vec3& pos, const vec3& scale, float rotation, GameObject* parent):
+	name{name},
+	enabled{true},
+	parentPtr{parent},
+	childrenPtr{},
+	prevEnabled{enabled}
 {
-	const auto& pos = m_transform.GetPosition();
-	Renderer::GetInstance().RenderTexture(*m_texture, pos.x, pos.y);
+	Init();
+	transform->position = pos;
+	transform->scale = scale;
+	transform->rotation = rotation;
+
 }
 
-void dae::GameObject::SetTexture(const std::string& filename)
+GameObject::GameObject(std::string name):
+	name{name },
+	enabled{ true },
+	parentPtr{  },
+	childrenPtr{},
+	prevEnabled{ enabled }
 {
-	m_texture = ResourceManager::GetInstance().LoadTexture(filename);
+	Init();
 }
 
-void dae::GameObject::SetPosition(float x, float y)
+GameObject::GameObject():
+	name{ },
+	enabled{ true },
+	parentPtr{  },
+	childrenPtr{},
+	prevEnabled{ enabled }
 {
-	m_transform.SetPosition(x, y, 0.0f);
+	Init();
 }
+
+GameObject::~GameObject()
+{
+	for (int idx{}; idx < components.Size(); idx++) {
+		components[idx].reset();
+	}
+	//components.CleanUp();
+	//newComponents.CleanUp();
+}
+
+void GameObject::Init()
+{
+	//SceneManager::GetInstance().curScene->Add(std::shared_ptr<GameObject>(this));
+	if (!GetComponent<Transform>()) {
+		transform = AddComponent<Transform>();
+	}
+}
+
+
+void GameObject::Update()
+{
+	if (!prevEnabled && enabled) {
+		for (int idx{}; idx < components.Size(); idx++) {
+			components[idx]->OnEnable();
+		}
+		prevEnabled = enabled;
+	}
+	if (prevEnabled && !enabled) {
+		for (int idx{}; idx < components.Size(); idx++) {
+			components[idx]->OnDisable();
+		}
+		prevEnabled = enabled;
+	}
+	if (enabled) {
+		for (int idx{}; idx < newComponents.Size(); idx++) {
+			newComponents[idx]->Start();
+			newComponents.DeleteAt(idx);
+			//return;
+		}
+
+		for (int idx{}; idx < components.Size(); idx++) {
+			components[idx]->Update();
+		}
+		if (transform != nullptr) return;
+		if (transform->position != transform->prevPos) {
+			for (int idx{}; idx < childrenPtr.Size(); idx++) {
+				childrenPtr[idx]->transform->position += transform->position - transform->prevPos;
+			}
+			transform->prevPos = transform->position;
+		}
+	}
+
+}
+
+void GameObject::Render()
+{
+	if (enabled) {
+		for (int idx{}; idx < components.Size(); idx++) {
+			components[idx]->Render();
+		}
+	}
+
+}
+
+void GameObject::Render(int order)
+{
+	order++;
+	if (!enabled) return;
+	//SpriteRenderer* spRender = GetComponent <SpriteRenderer>();
+	//if (spRender != nullptr && spRender->GetOrder() == order) {
+	//	spRender->Render();
+	//}
+	//Collider* col = GetComponent <Collider>();
+	//if (col != NULL) col->Render();
+	// 
+	//List<SpriteRenderer*> spRender = GetAllComponents<SpriteRenderer>();
+	//std::vector<SpriteRenderer*> drawSprites = spRender.FindAll([order](SpriteRenderer* sp) { return sp->order == order; });
+	//for (int idx{}; idx < drawSprites.size(); idx++) {
+	//	drawSprites[idx]->Draw();
+	//}
+}
+
+//GameObject* GameObject::FindChild(std::string cname)
+//{
+//	return childrenPtr.Find([cname](std::shared_ptr<GameObject> g) {return g->name == cname; }).get();
+//}
+
+//void GameObject::Copy(GameObject other, bool parent)
+//{
+//	if (parent) name = other.name + " (copy)";
+//	else name = other.name;
+//	enabled = other.enabled;
+//	transform->position = other.transform->position;
+//	transform->localPosition = other.transform->localPosition;
+//	transform->scale = other.transform->scale;
+//	transform->localScale = other.transform->localScale;
+//	transform->rotation = other.transform->rotation;
+//	transform->localRotation = other.transform->localRotation;
+//
+//	for (int idx{}; idx < other.components.Size(); idx++) {
+//
+//		AddComponentCopy(other.components[idx].get()); // ???
+//		//components.Add(new decltype(other.components[idx])());
+//	}
+//
+//	parentPtr = other.parentPtr;
+//	for (int idx{}; idx < other.childrenPtr.Size(); idx++) {
+//		std::shared_ptr<GameObject> child = std::make_shared<GameObject>(new GameObject());
+//		child->Copy(*other.childrenPtr[idx], false);
+//		childrenPtr.Add(child);
+//	}
+//}

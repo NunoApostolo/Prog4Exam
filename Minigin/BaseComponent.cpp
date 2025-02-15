@@ -1,0 +1,23 @@
+#include "BaseComponent.h"
+#include "GameObject.h" //...2 hrs... I AM GOING TO KILL SOMEONE!!!
+#include "Time.h"
+
+BaseComponent::BaseComponent(GameObject* objPtr, std::string type):
+    gameObject{ objPtr },
+    classType{type}
+{
+    //Start();
+}
+BaseComponent::~BaseComponent() {
+}
+
+std::function<void()> BaseComponent::GetFunction(std::string name)
+{
+    if (funcMap.Exist(name)) return funcMap[name];
+    return NULL;
+}
+
+std::string BaseComponent::GetType()
+{
+    return classType;
+}
