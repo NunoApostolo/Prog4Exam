@@ -162,7 +162,7 @@ template <typename T>
 T& List<T>::GetAt(size_t index) const{
     T value{};
     Node* curNode{ startNode };
-    for (int i{}; i < index; ++i) {
+    for (size_t i{}; i < index; ++i) {
         curNode = (i == index ? nullptr : curNode->next);
     }
     return curNode->data;

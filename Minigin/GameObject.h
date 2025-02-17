@@ -10,7 +10,6 @@
 //#include "Transform.h"
 
 class Transform;
-using namespace glm;
 #pragma once
 class GameObject final
 {
@@ -22,7 +21,7 @@ public:
 	GameObject* parentPtr;
 	List<std::shared_ptr<GameObject>> childrenPtr; // framework won't be used much
 
-	GameObject(std::string name, const vec3& pos, const vec3& scale, float rotarion, GameObject* parent = nullptr); // just in case, different constructor behaviour
+	GameObject(std::string name, const glm::vec3& pos, const glm::vec3& scale, float rotarion, GameObject* parent = nullptr); // just in case, different constructor behaviour
 	GameObject(std::string name);
 	GameObject();
 	GameObject& operator =(const GameObject&) = delete;
@@ -111,7 +110,7 @@ public:
 				//if (col != nullptr) {
 				//	ColliderManager::RemoveObjCollider(col);
 				//}
-				delete components[idx];
+				//delete components[idx]; ??
 				components.DeleteAt(idx);
 				break;
 			}

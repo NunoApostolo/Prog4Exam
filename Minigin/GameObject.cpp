@@ -7,7 +7,7 @@
 #include "Transform.h"
 #include "TextureRenderer.h"
 
-GameObject::GameObject(std::string name, const vec3& pos, const vec3& scale, float rotation, GameObject* parent):
+GameObject::GameObject(std::string name, const glm::vec3& pos, const glm::vec3& scale, float rotation, GameObject* parent):
 	name{name},
 	enabled{true},
 	parentPtr{parent},
@@ -83,7 +83,7 @@ void GameObject::Update()
 		for (int idx{}; idx < components.Size(); idx++) {
 			components[idx]->Update();
 		}
-		if (transform != nullptr) return;
+		if (transform == nullptr) return;
 		if (transform->position != transform->prevPos) {
 			for (int idx{}; idx < childrenPtr.Size(); idx++) {
 				childrenPtr[idx]->transform->position += transform->position - transform->prevPos;

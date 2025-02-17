@@ -121,7 +121,7 @@ void Minigin::Run(const std::function<void()>& load)
 
 		auto wait = postMilli + milliseconds(1000/frameRate) - high_resolution_clock::now().time_since_epoch();
 
-		std::cout << wait << std::endl;
+		//std::cout << wait << std::endl;
 
 		if (wait > 0ms) std::this_thread::sleep_for(wait);
 	}
