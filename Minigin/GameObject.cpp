@@ -7,6 +7,14 @@
 #include "Transform.h"
 #include "TextureRenderer.h"
 
+std::shared_ptr<GameObject> GameObject::CreateObject(std::string name)
+{
+	auto scene = SceneManager::GetInstance().curScene;
+	auto go = std::make_shared<GameObject>(name);
+	scene->Add(go);
+	return go;
+}
+
 GameObject::GameObject(std::string name, const glm::vec3& pos, const glm::vec3& scale, float rotation, GameObject* parent):
 	name{name},
 	enabled{true},
@@ -18,7 +26,6 @@ GameObject::GameObject(std::string name, const glm::vec3& pos, const glm::vec3& 
 	transform->position = pos;
 	transform->scale = scale;
 	transform->rotation = rotation;
-
 }
 
 GameObject::GameObject(std::string name):
@@ -84,12 +91,12 @@ void GameObject::Update()
 			components[idx]->Update();
 		}
 		if (transform == nullptr) return;
-		if (transform->position != transform->prevPos) {
-			for (int idx{}; idx < childrenPtr.Size(); idx++) {
-				childrenPtr[idx]->transform->position += transform->position - transform->prevPos;
-			}
-			transform->prevPos = transform->position;
-		}
+		//if (transform->position != transform->prevPos) {
+		//	for (int idx{}; idx < childrenPtr.Size(); idx++) {
+		//		childrenPtr[idx]->transform->position += transform->position - transform->prevPos;
+		//	}
+		//	transform->prevPos = transform->position;
+		//}
 	}
 
 }
@@ -120,6 +127,19 @@ void GameObject::Render(int order)
 	//for (int idx{}; idx < drawSprites.size(); idx++) {
 	//	drawSprites[idx]->Draw();
 	//}
+}
+
+void GameObject::SetParent(GameObject* parent)
+{
+	if (parent == nullptr && parentPtr != nullptr) {
+		parentPtr->childrenPtr.Delete([&](std::shared_ptr<GameObject> go) {return go.get() == this; });
+		parentPtr = nullptr;
+	}
+	if (parent == nullptr) return;
+	parentPtr = parent;
+	parentPtr->childrenPtr.Add(SceneManager::GetInstance().curScene->GetObjPtr(this));
+
+	transform->isDirty = true;
 }
 
 //GameObject* GameObject::FindChild(std::string cname)

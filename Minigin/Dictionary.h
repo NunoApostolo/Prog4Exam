@@ -203,8 +203,10 @@ public:
 		size--;
 	}
 	void EraseAll() {
+		if (pool != nullptr) {
+			delete[] pool; // why is it giving me a memory leak??? it's being deleted man! ... motherf**
+		}
 		if (root == nullptr) return;
-		delete[] pool; // why is it giving me a memory leak??? it's being deleted man!
 		root = nullptr;
 		insertIdx = 0;
 		size = 0;

@@ -6,11 +6,17 @@
 #include "Texture2D.h"
 #include "Font.h"
 
+
 namespace fs = std::filesystem;
 
 void ResourceManager::Init(const std::filesystem::path& dataPath)
 {
-	m_dataPath = dataPath;
+	if (std::filesystem::exists(dataPath)) {
+		m_dataPath = dataPath;
+	}
+	else {
+		m_dataPath = dataPath.string().substr(3);
+	}
 
 	if (TTF_Init() != 0)
 	{

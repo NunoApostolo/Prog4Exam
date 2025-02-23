@@ -75,6 +75,17 @@ public:
         return -1;
     }
     template <class _Pr>
+    void Delete(_Pr pred) {
+        Node* curNode = startNode;
+        for (int i{}; i < size; ++i) {
+            if (pred(curNode->data)) {
+                DeleteAt(i);
+                return;
+            }
+            curNode = curNode->next;
+        }
+    }
+    template <class _Pr>
     std::vector<T> FindAll(_Pr pred) {
         std::vector<T> founds{};
         Node* curNode = startNode;

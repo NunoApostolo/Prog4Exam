@@ -21,6 +21,8 @@ public:
 	GameObject* parentPtr;
 	List<std::shared_ptr<GameObject>> childrenPtr; // framework won't be used much
 
+	static std::shared_ptr<GameObject> CreateObject(std::string name);
+
 	GameObject(std::string name, const glm::vec3& pos, const glm::vec3& scale, float rotarion, GameObject* parent = nullptr); // just in case, different constructor behaviour
 	GameObject(std::string name);
 	GameObject();
@@ -34,6 +36,8 @@ public:
 	void Render(int order);// draws components
 
 	//GameObject* FindChild(std::string cname);
+
+	void SetParent(GameObject* parent);
 
 	template <typename T> // dynamic? / not seperating template code from header. It's a pain otherwise.
 	T* AddComponent() {
@@ -132,7 +136,7 @@ private:
 		//T* comp{ new T(ptr, typeid(T).name()) };
 		components.Add(comp);
 		newComponents.Add(comp);
-		return comp.get();
+		return comp.getter();
 	}
 
 };

@@ -50,7 +50,7 @@ void TextObject::SetText(const std::string& text)
 
 void TextObject::SetPosition(const float x, const float y)
 {
-	gameObject->transform->SetPosition(x, y, 0.f);
+	gameObject->transform->position = glm::vec3(x, y, 0.f);
 }
 
 

@@ -31,10 +31,6 @@ void Scene::Update()
 	for(auto& object : m_objects)
 	{
 		object.get()->Update();
-		//temp
-		if (object->name == "FPS") {
-			object->GetComponent<TextObject>()->SetText(std::to_string(1 / Time::deltaTime));
-		}
 	}
 }
 
@@ -49,5 +45,13 @@ void Scene::Render() const
 	{
 		object->Render();
 	}
+}
+
+std::shared_ptr<GameObject> Scene::GetObjPtr(GameObject* ptr)
+{
+	for (auto& obj : m_objects) {
+		if (obj.get() == ptr) return obj;
+	}
+	return nullptr;
 }
 

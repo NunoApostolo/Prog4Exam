@@ -3,6 +3,7 @@
 #include "Texture2D.h"
 #include "Renderer.h"
 #include <stdexcept>
+#include "SDL_render.h"
 
 Texture2D::~Texture2D()
 {

@@ -15,6 +15,8 @@ public:
 	void FixedUpdate();
 	void Render() const;
 
+	std::shared_ptr<GameObject> GetObjPtr(GameObject* ptr);
+
 	~Scene();
 	Scene(const Scene& other) = delete;
 	Scene(Scene&& other) = delete;
