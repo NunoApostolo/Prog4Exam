@@ -109,6 +109,7 @@ void Minigin::Run(const std::function<void()>& load)
 
 		lag += duration_cast<nanoseconds>(postMilli - preMilli);
 		if (lag >= 1000ns) {
+			Time::SetFixedDeltaTime(duration<float>(lag).count());
 			lag -= 1000ns;
 			sceneManager.FixedUpdate();
 		}

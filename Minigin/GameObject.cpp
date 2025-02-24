@@ -131,13 +131,15 @@ void GameObject::Render(int order)
 
 void GameObject::SetParent(GameObject* parent)
 {
-	if (parent == nullptr && parentPtr != nullptr) {
+	if (parentPtr != nullptr) {
 		parentPtr->childrenPtr.Delete([&](std::shared_ptr<GameObject> go) {return go.get() == this; });
-		parentPtr = nullptr;
+		if (parent == nullptr) parentPtr = nullptr;
 	}
 	if (parent == nullptr) return;
+	glm::vec3 prevPos{transform->position};
 	parentPtr = parent;
 	parentPtr->childrenPtr.Add(SceneManager::GetInstance().curScene->GetObjPtr(this));
+	transform->localPosition = prevPos - parentPtr->transform->position;
 
 	transform->isDirty = true;
 }

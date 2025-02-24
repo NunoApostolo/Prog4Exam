@@ -108,6 +108,7 @@ public:
 	}
 	template <typename T>
 	void DeleteComponent() {
+		if (typeid(T) == typeid(Transform)) return;
 		for (int idx{}; idx < components.Size(); idx++) {
 			if (components[idx]->GetType() == typeid(T).name()) {
 				//Collider* col{ dynamic_cast<Collider*>(components[idx]) };
