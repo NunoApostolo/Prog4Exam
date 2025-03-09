@@ -129,17 +129,24 @@ void GameObject::Render(int order)
 	//}
 }
 
+void GameObject::RenderUI()
+{
+	if (enabled) {
+		for (int idx{}; idx < components.Size(); idx++) {
+			components[idx]->RenderUI();
+		}
+	}
+}
+
 void GameObject::SetParent(GameObject* parent)
 {
-	if (parentPtr != nullptr) {
+	if (parent == nullptr && parentPtr != nullptr) {
 		parentPtr->childrenPtr.Delete([&](std::shared_ptr<GameObject> go) {return go.get() == this; });
-		if (parent == nullptr) parentPtr = nullptr;
+		parentPtr = nullptr;
 	}
 	if (parent == nullptr) return;
-	glm::vec3 prevPos{transform->position};
 	parentPtr = parent;
 	parentPtr->childrenPtr.Add(SceneManager::GetInstance().curScene->GetObjPtr(this));
-	transform->localPosition = prevPos - parentPtr->transform->position;
 
 	transform->isDirty = true;
 }

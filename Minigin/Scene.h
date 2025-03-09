@@ -14,8 +14,9 @@ public:
 	void Update();
 	void FixedUpdate();
 	void Render() const;
+	void RenderUI();
 
-	std::shared_ptr<GameObject> GetObjPtr(GameObject* ptr);
+	GameObject* GetObjPtr(GameObject* ptr);
 
 	~Scene();
 	Scene(const Scene& other) = delete;
@@ -27,7 +28,7 @@ private:
 	explicit Scene(const std::string& name);
 
 	std::string m_name;
-	std::vector <std::shared_ptr<GameObject>> m_objects{};
+	std::vector <std::unique_ptr<GameObject>> m_objects{};
 
 	static unsigned int m_idCounter;
 };

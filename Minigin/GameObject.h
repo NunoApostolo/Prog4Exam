@@ -34,6 +34,7 @@ public:
 	void Update(); // updates components
 	void Render();// draws components
 	void Render(int order);// draws components
+	void RenderUI();
 
 	//GameObject* FindChild(std::string cname);
 
@@ -108,7 +109,6 @@ public:
 	}
 	template <typename T>
 	void DeleteComponent() {
-		if (typeid(T) == typeid(Transform)) return;
 		for (int idx{}; idx < components.Size(); idx++) {
 			if (components[idx]->GetType() == typeid(T).name()) {
 				//Collider* col{ dynamic_cast<Collider*>(components[idx]) };

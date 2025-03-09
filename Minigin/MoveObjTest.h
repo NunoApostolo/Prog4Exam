@@ -12,6 +12,6 @@ public:
 	void Render() const override;
 private:
 	float angle{0};
-	glm::vec3 startPos;
+	glm::vec3 startPos{};
 };
 

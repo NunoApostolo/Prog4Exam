@@ -3,26 +3,22 @@
 
 void SceneManager::Update()
 {
-	for(auto& scene : m_scenes)
-	{
-		scene.get()->Update();
-	}
+	curScene->Update();
 }
 
 void SceneManager::FixedUpdate()
 {
-	for (auto& scene : m_scenes)
-	{
-		scene->FixedUpdate();
-	}
+	curScene->FixedUpdate();
 }
 
 void SceneManager::Render()
 {
-	for (const auto& scene : m_scenes)
-	{
-		scene->Render();
-	}
+	curScene->Render();
+}
+
+void SceneManager::RenderUI()
+{
+	curScene->RenderUI();
 }
 
 void SceneManager::ClearScenes()
@@ -34,8 +30,8 @@ void SceneManager::ClearScenes()
 
 Scene& SceneManager::CreateScene(const std::string& name)
 {
-	const auto& scene = std::shared_ptr<Scene>(new Scene(name));
-	curScene = scene;
-	m_scenes.push_back(scene);
+	const auto& scene = std::make_unique<Scene>(name);
+	curScene = scene.get();
+	m_scenes.emplace_back(scene);
 	return *scene;
 }

@@ -31,6 +31,7 @@ public:
 	virtual void Update() {}; // empty
 	virtual void FixedUpdate() {}; // empty
 	virtual void Render() const {};
+	virtual void RenderUI() {};
 
 	virtual void OnDisable() {};
 	virtual void OnEnable() {};

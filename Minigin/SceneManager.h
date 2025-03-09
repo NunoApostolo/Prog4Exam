@@ -14,13 +14,14 @@ public:
 	void Update();
 	void FixedUpdate();
 	void Render();
+	void RenderUI();
 
 	void ClearScenes();
 
-	std::shared_ptr<Scene> curScene;
+	Scene* curScene;
 private:
 	friend class Singleton<SceneManager>;
 	SceneManager() = default;
-	std::vector<std::shared_ptr<Scene>> m_scenes;
+	std::vector<std::unique_ptr<Scene>> m_scenes;
 };
 

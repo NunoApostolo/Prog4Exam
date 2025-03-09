@@ -46,11 +46,17 @@ void Scene::Render() const
 		object->Render();
 	}
 }
+void Scene::RenderUI() {
+	for (const auto& object : m_objects)
+	{
+		object->RenderUI();
+	}
+}
 
-std::shared_ptr<GameObject> Scene::GetObjPtr(GameObject* ptr)
+GameObject* Scene::GetObjPtr(GameObject* ptr)
 {
 	for (auto& obj : m_objects) {
-		if (obj.get() == ptr) return obj;
+		if (obj.get() == ptr) return obj.get();
 	}
 	return nullptr;
 }
