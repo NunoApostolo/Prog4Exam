@@ -7,12 +7,13 @@
 #include "Transform.h"
 #include "TextureRenderer.h"
 
-std::shared_ptr<GameObject> GameObject::CreateObject(std::string name)
+GameObject* GameObject::CreateObject(std::string name)
 {
 	auto scene = SceneManager::GetInstance().curScene;
-	auto go = std::make_shared<GameObject>(name);
-	scene->Add(go);
-	return go;
+	auto go = std::make_unique<GameObject>(name);
+	auto gop = go.get();
+	scene->Add(std::move(go));
+	return gop;
 }
 
 GameObject::GameObject(std::string name, const glm::vec3& pos, const glm::vec3& scale, float rotation, GameObject* parent):
@@ -141,7 +142,7 @@ void GameObject::RenderUI()
 void GameObject::SetParent(GameObject* parent)
 {
 	if (parent == nullptr && parentPtr != nullptr) {
-		parentPtr->childrenPtr.Delete([&](std::shared_ptr<GameObject> go) {return go.get() == this; });
+		parentPtr->childrenPtr.Delete([&](GameObject* go) {return go == this; });
 		parentPtr = nullptr;
 	}
 	if (parent == nullptr) return;

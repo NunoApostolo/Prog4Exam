@@ -4,11 +4,12 @@
 #include <memory>
 #include "Singleton.h"
 
-
 class Scene;
 class SceneManager final : public Singleton<SceneManager>
 {
 public:
+	~SceneManager() = default;
+
 	Scene& CreateScene(const std::string& name);
 
 	void Update();
@@ -18,10 +19,9 @@ public:
 
 	void ClearScenes();
 
-	Scene* curScene;
+	Scene* curScene{};
 private:
 	friend class Singleton<SceneManager>;
 	SceneManager() = default;
-	std::vector<std::unique_ptr<Scene>> m_scenes;
 };
 

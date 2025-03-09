@@ -171,7 +171,7 @@ void List<T>::CleanUp()
 
 template <typename T>
 T& List<T>::GetAt(size_t index) const{
-    T value{};
+    //T value{};
     Node* curNode{ startNode };
     for (size_t i{}; i < index; ++i) {
         curNode = (i == index ? nullptr : curNode->next);

@@ -19,9 +19,9 @@ public:
 	Transform* transform;
 
 	GameObject* parentPtr;
-	List<std::shared_ptr<GameObject>> childrenPtr; // framework won't be used much
+	List<GameObject*> childrenPtr; // framework won't be used much
 
-	static std::shared_ptr<GameObject> CreateObject(std::string name);
+	static GameObject* CreateObject(std::string name);
 
 	GameObject(std::string name, const glm::vec3& pos, const glm::vec3& scale, float rotarion, GameObject* parent = nullptr); // just in case, different constructor behaviour
 	GameObject(std::string name);

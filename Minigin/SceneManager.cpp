@@ -1,6 +1,8 @@
 #include "SceneManager.h"
 #include "Scene.h"
 
+std::vector<std::unique_ptr<Scene>> m_scenes;
+
 void SceneManager::Update()
 {
 	curScene->Update();
@@ -30,8 +32,8 @@ void SceneManager::ClearScenes()
 
 Scene& SceneManager::CreateScene(const std::string& name)
 {
-	const auto& scene = std::make_unique<Scene>(name);
+	auto scene = std::unique_ptr<Scene>(new Scene(name));
 	curScene = scene.get();
-	m_scenes.emplace_back(scene);
-	return *scene;
+	m_scenes.emplace_back(std::move(scene));
+	return *curScene;
 }

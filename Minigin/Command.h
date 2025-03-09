@@ -1,19 +1,27 @@
 #include "SDL.h"
 #include <functional>
+#include <windows.h>
+#include <Xinput.h>
 
 #pragma once
-class Command
+class Command final
 {
 public:
+	Command() = default;
+	Command(const Command&) = delete;
+	Command(Command&&) = delete;
 
-	void Register(SDL_KeyCode key, std::function<void()> function, std::function<bool(SDL_KeyCode)> keyFunction = NULL);
+	void Register(SDL_Keycode key, std::function<void()> function, std::function<bool(SDL_Keycode)> keyFunction = NULL);
+	void Register(WORD btn, std::function<void()> function, std::function<bool(SDL_Keycode)> keyFunction = NULL);
 
 	void Execute();
 
-	SDL_KeyCode GetKey();
-	std::function<bool(SDL_KeyCode)> keyFunc;
+	SDL_Keycode GetKey();
+	WORD GetBtn();
+	std::function<bool(SDL_Keycode)> keyFunc{};
 private:
-	SDL_KeyCode key;
-	std::function<void()> func;
+	SDL_Keycode key{};
+	WORD btn{};
+	std::function<void()> func{NULL};
 };
 
