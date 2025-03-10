@@ -84,11 +84,13 @@ void GameObject::Update()
 	if (enabled) {
 		for (int idx{}; idx < newComponents.Size(); idx++) {
 			newComponents[idx]->Start();
-			newComponents.DeleteAt(idx);
+			//newComponents.DeleteAt(idx);
 			//return;
 		}
+		newComponents.CleanUp();
 
 		for (int idx{}; idx < components.Size(); idx++) {
+			components[idx]->CheckGO();
 			components[idx]->Update();
 		}
 		if (transform == nullptr) return;
@@ -145,7 +147,12 @@ void GameObject::SetParent(GameObject* parent)
 		parentPtr->childrenPtr.Delete([&](GameObject* go) {return go == this; });
 		parentPtr = nullptr;
 	}
-	if (parent == nullptr) return;
+	if (parent == nullptr) {
+		transform->localPosition = transform->position;
+		return;
+	}
+	transform->localPosition = transform->position - parent->transform->position;
+
 	parentPtr = parent;
 	parentPtr->childrenPtr.Add(SceneManager::GetInstance().curScene->GetObjPtr(this));
 

@@ -12,8 +12,8 @@ public:
 
 	glm::vec3& GetPosition();
 
-	VarWrapper<glm::vec3,Transform> position{this,&Transform::GetPosition,&Transform::SetPosition};
-	VarWrapper<glm::vec3, Transform> localPosition{this,&Transform::GetPosition,&Transform::SetLocalPosition};
+	VarWrapper<glm::vec3, Transform> position{ this, [this]() { return (this->GetPosition()); }, [this](glm::vec3 v) { this->SetPosition(v); } };
+	VarWrapper<glm::vec3, Transform> localPosition{this,[this]() { return (this->GetPosition()); },[this](const glm::vec3& v) { this->SetLocalPosition(v); } };
 	glm::vec3 scale{};
 	glm::vec3 localScale{};
 
@@ -24,6 +24,7 @@ public:
 
 	bool isDirty{ false };
 
+	void Start() override;
 	void Update() override;
 protected:
 	// using these functions kinda screws everything up, so they are protected

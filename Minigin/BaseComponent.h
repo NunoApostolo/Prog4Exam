@@ -49,8 +49,11 @@ public:
 	virtual void OnCollitionExit(Collider*) {};
 
 	GameObject* gameObject; // need vars in object
+	void CheckGO();
 protected:
 	std::string classType; // something malicious is brewing
 
+private:
+	GameObject* checkGO{};
 };
 

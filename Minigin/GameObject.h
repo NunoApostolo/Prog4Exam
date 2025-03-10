@@ -69,11 +69,11 @@ public:
 		return nullptr;
 	}
 	template <typename T>
-	std::list<T*> GetAllComponents() {
+	List<T*> GetAllComponents() {
 		List<T*> list{};
 		for (int idx{}; idx < components.Size(); idx++) {
 			if (components[idx]->GetType() == typeid(T).name()) {
-				list.Add((T*)components[idx]);
+				list.Add((T*)components[idx].get());
 			}
 		}
 		return list;

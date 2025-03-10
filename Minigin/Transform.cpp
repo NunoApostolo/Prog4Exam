@@ -1,14 +1,14 @@
 #include "Transform.h"
 #include "GameObject.h"
 
-glm::vec3& Transform::GetPosition()
+glm::vec3& Transform::GetPosition() // do not assign possition with = operator here -> endless recursion lol
 {
 	if (isDirty) {
 		if (gameObject->parentPtr != nullptr) {
 			glm::vec3 pPos{ gameObject->parentPtr->transform->GetPosition() };
-			position = localPosition + pPos;
+			SetPosition(localPosition + pPos);
 		}
-		else position = localPosition;
+		else SetPosition(localPosition);
 		isDirty = false;
 	}
 
@@ -50,6 +50,12 @@ void Transform::SetLocalPosition(const glm::vec3& pos)
 	localPosition.x = pos.x;
 	localPosition.y = pos.y;
 	localPosition.z = pos.z;
+}
+
+void Transform::Start()
+{
+	//position.getter = [this]() { return (this->GetPosition()); };
+	//position.setter = [this](glm::vec3 v) { this->SetPosition(v); };
 }
 
 void Transform::Update()

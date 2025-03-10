@@ -94,7 +94,7 @@ void Minigin::Run(const std::function<void()>& load)
 	auto& sceneManager = SceneManager::GetInstance();
 	auto& input = InputManager::GetInstance();
 
-	nanoseconds preMilli = duration_cast<nanoseconds>(high_resolution_clock().now().time_since_epoch());
+	nanoseconds preTime = duration_cast<nanoseconds>(high_resolution_clock().now().time_since_epoch());
 	nanoseconds lag{};
 	
 	const int frameRate{ 60 };
@@ -103,23 +103,24 @@ void Minigin::Run(const std::function<void()>& load)
 	bool doContinue = true;
 	while (doContinue)
 	{
-		nanoseconds postMilli = duration_cast<nanoseconds>(high_resolution_clock().now().time_since_epoch());
-		Time::SetDeltaTime(duration<float>(postMilli - preMilli).count());
-		preMilli = postMilli;
+		nanoseconds postTime = duration_cast<nanoseconds>(high_resolution_clock().now().time_since_epoch());
+		Time::SetDeltaTime(duration<float>(postTime - preTime).count());
+		preTime = postTime;
 
-		lag += duration_cast<nanoseconds>(postMilli - preMilli);
+		doContinue = input.ProcessInput();
+
+		lag += duration_cast<nanoseconds>(postTime - preTime);
 		if (lag >= 1000ns) {
 			lag -= 1000ns;
 			sceneManager.FixedUpdate();
 		}
 
-		doContinue = input.ProcessInput();
 		sceneManager.Update();
 		renderer.Render();
 
-		postMilli = duration_cast<nanoseconds>(high_resolution_clock().now().time_since_epoch());
+		postTime = duration_cast<nanoseconds>(high_resolution_clock().now().time_since_epoch());
 
-		auto wait = postMilli + milliseconds(1000/frameRate) - high_resolution_clock::now().time_since_epoch();
+		auto wait = postTime + milliseconds(1000/frameRate) - high_resolution_clock::now().time_since_epoch();
 
 		//std::cout << wait << std::endl;
 

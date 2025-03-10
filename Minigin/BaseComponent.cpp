@@ -21,3 +21,9 @@ std::string BaseComponent::GetType()
 {
     return classType;
 }
+
+void BaseComponent::CheckGO()
+{
+    //assert(checkGO == gameObject);
+    if (gameObject != checkGO) gameObject = checkGO;
+}
