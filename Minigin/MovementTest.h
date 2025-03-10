@@ -10,8 +10,6 @@ public:
 	void Start() override;
 	void Update() override;
 
-	void Move(SDL_Keycode key);
-
 private:
 
 };

@@ -15,12 +15,22 @@ bool InputManager::ProcessInput()
 				holdKeys.emplace_back(e.key.keysym.sym);
 			}
 			//KeyDown(e.key.keysym.sym);
-			std::cout << "down" << std::endl;
+			//std::cout << "down" << std::endl;
+			for (auto& command : commands) {
+				if (KeyDown(command->GetKey())) {
+					command->ExecuteDown();
+				}
+			}
 		}
 		if (e.type == SDL_KEYUP) {
 			//KeyUp(e.key.keysym.sym);
 			holdKeys.erase(std::remove(holdKeys.begin(), holdKeys.end(), e.key.keysym.sym), holdKeys.end());
-			std::cout << "up" << std::endl;
+			//std::cout << "up" << std::endl;
+			for (auto& command : commands) {
+				if (KeyUp(command->GetKey())) {
+					command->ExecuteUp();
+				}
+			}
 		}
 		if (e.type == SDL_MOUSEBUTTONDOWN) {
 			
@@ -29,40 +39,9 @@ bool InputManager::ProcessInput()
 		ImGui_ImplSDL2_ProcessEvent(&e);
 	}
 
-	DWORD dwResult{ 0 };
-	for (DWORD i = 0; i < XUSER_MAX_COUNT; i++)
-	{
-		ZeroMemory(&state, sizeof(XINPUT_STATE));
-
-		dwResult = XInputGetState(i, &state);
-
-		if (holdBtns.size() != XUSER_MAX_COUNT) {
-			holdBtns.resize(XUSER_MAX_COUNT);
-		}
-
-		if (dwResult == ERROR_SUCCESS)
-		{
-			prevBtns[i] = holdBtns[i];
-			holdBtns[i] = state.Gamepad.wButtons;
-		}
-		else
-		{
-			
-		}
-	}
-
 	for (auto& command : commands) {
-		if (command->GetKey() != 0) {
-			if (command->keyFunc == NULL) {
-				if (KeyPressed(command->GetKey())) command->Execute();
-			}
-			else if (command->keyFunc((command->GetKey()))) command->Execute();
-		}
-		else {
-			if (command->keyFunc == NULL) {
-				if (BtnPressed(command->GetBtn())) command->Execute();
-			}
-			else if (command->keyFunc((command->GetBtn()))) command->Execute();
+		if (KeyPressed(command->GetKey())) {
+			command->ExecutePressed();
 		}
 	}
 
@@ -89,21 +68,6 @@ bool InputManager::KeyUp(SDL_Keycode key)
 	return false;
 }
 
-bool InputManager::BtnDown(WORD btn, int user)
-{
-	return (!(prevBtns[user] ^ btn) && (holdBtns[user] ^ btn));
-}
-
-bool InputManager::BtnPressed(WORD btn, int user)
-{
-	return holdBtns[user] ^ btn;
-}
-
-bool InputManager::BtnUp(WORD btn, int user)
-{
-	return (prevBtns[user] ^ btn && !(holdBtns[user] ^ btn));
-}
-
 bool InputManager::MouseDown(bool left)
 {
 	if (left) {
@@ -127,10 +91,8 @@ bool InputManager::MouseUp(bool left)
 	}
 	return false;
 }
-
-void InputManager::RegisterCommand(SDL_Keycode key, std::function<void()> function, std::function<bool(SDL_Keycode)> keyFunction)
-{
-	auto command = std::unique_ptr<Command>(new Command());
-	command->Register(key, function, keyFunction);
-	commands.emplace_back(std::move(command));
+void InputManager::RegisterCommand(Command* command) {
+	std::unique_ptr<Command> com = std::unique_ptr<Command>(command);
+	//command->Register(gameobject, key);
+	commands.emplace_back(std::move(com));
 }

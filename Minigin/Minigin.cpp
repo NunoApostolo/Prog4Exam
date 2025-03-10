@@ -94,8 +94,8 @@ void Minigin::Run(const std::function<void()>& load)
 	auto& sceneManager = SceneManager::GetInstance();
 	auto& input = InputManager::GetInstance();
 
-	nanoseconds preTime = duration_cast<nanoseconds>(high_resolution_clock().now().time_since_epoch());
 	nanoseconds lag{};
+	nanoseconds preTime = duration_cast<nanoseconds>(high_resolution_clock().now().time_since_epoch());
 	
 	const int frameRate{ 60 };
 

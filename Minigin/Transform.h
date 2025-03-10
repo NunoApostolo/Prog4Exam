@@ -26,13 +26,13 @@ public:
 
 	void Start() override;
 	void Update() override;
+	void SetPosition(const glm::vec3&);
+	void SetLocalPosition(const glm::vec3&);
 protected:
 	// using these functions kinda screws everything up, so they are protected
 	// the varwrapper takes care of everything... I hope
 	void SetPosition(float x, float y, float z);
-	void SetPosition(const glm::vec3&);
 	void SetLocalPosition(float x, float y, float z);
-	void SetLocalPosition(const glm::vec3&);
 private:
 };
 

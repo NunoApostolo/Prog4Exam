@@ -4,6 +4,7 @@
 
 BaseComponent::BaseComponent(GameObject* objPtr, std::string type):
     gameObject{ objPtr },
+    checkGO{objPtr},
     classType{type}
 {
     //Start();
