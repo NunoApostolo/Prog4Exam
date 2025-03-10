@@ -14,7 +14,7 @@ BaseComponent::~BaseComponent() {
 
 std::function<void()> BaseComponent::GetFunction(std::string name)
 {
-    if (funcMap.Exist(name)) return funcMap[name];
+    //if (funcMap.Exist(name)) return funcMap[name];
     return NULL;
 }
 

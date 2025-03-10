@@ -3,8 +3,9 @@
 #pragma once
 template <typename T, class C>
 class VarWrapper : public T{
-	friend class Transform; // not sure if needed
 public:
+	friend class Transform;
+
 	VarWrapper() {}
 	VarWrapper(C* pClass, std::function<void()> getter) {}
 
@@ -74,6 +75,7 @@ public:
 		setter(getter() - rhs.getter());
 		return *this;
 	}
+
 	template <typename T>
 	void CheckCache(T val) { // check if axis was changed
 		if (cache != val) {
@@ -82,7 +84,15 @@ public:
 		}
 	}
 
+	void SetVec3(glm::vec3 vec) {
+		x = vec.x;
+		y = vec.y;
+		z = vec.z;
+	}
+
 	T cache{};
+protected:
+
 private:
 	C* pClass;
 
@@ -93,4 +103,8 @@ private:
 	//T& (C::*getter)(); // function pointers to getters and setters, is getter unused?
 	//void (C::*setter)(T&);
 	//void (C::*csetter)(const T&);
+
+	using T::x;
+	using T::y;
+	using T::z;
 };

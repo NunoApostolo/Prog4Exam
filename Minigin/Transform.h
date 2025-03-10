@@ -5,6 +5,7 @@
 
 class Transform : public BaseComponent
 {
+	friend VarWrapper<glm::vec3, Transform>;
 public:
 	Transform(GameObject* objPtr, std::string type) : BaseComponent(objPtr, type) {}
 

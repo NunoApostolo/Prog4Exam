@@ -16,6 +16,6 @@ void TextureRenderer::Render() const
 		}
 	}
 
-	Renderer::GetInstance().RenderTexture(*texture, gameObject->transform->position.x, gameObject->transform->position.y);
+	Renderer::GetInstance().RenderTexture(*texture, gameObject->transform->GetPosition().x, gameObject->transform->GetPosition().y);
 
 }

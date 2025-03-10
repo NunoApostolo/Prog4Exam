@@ -22,18 +22,12 @@ void Transform::SetPosition(const float x, const float y, const float z)
 void Transform::SetPosition(const glm::vec3& pos) // same as local if no parent
 {
 	isDirty = true;
-	position.x = pos.x;
-	position.y = pos.y;
-	position.z = pos.z;
+	position.SetVec3(pos);
 	if (gameObject->parentPtr == nullptr) {
-		localPosition.x = position.x;
-		localPosition.y = position.y;
-		localPosition.z = position.z;
+		localPosition.SetVec3(position);
 	}
 	else {
-		localPosition.x = position.x - gameObject->parentPtr->transform->position.x;
-		localPosition.y = position.y - gameObject->parentPtr->transform->position.y;
-		localPosition.z = position.z - gameObject->parentPtr->transform->position.z;
+		localPosition.SetVec3(position - gameObject->parentPtr->transform->position);
 		localPosition.cache = localPosition;
 	}
 
@@ -47,9 +41,7 @@ void Transform::SetLocalPosition(float x, float y, float z)
 void Transform::SetLocalPosition(const glm::vec3& pos)
 {
 	isDirty = true;
-	localPosition.x = pos.x;
-	localPosition.y = pos.y;
-	localPosition.z = pos.z;
+	localPosition.SetVec3(pos);
 }
 
 void Transform::Start()

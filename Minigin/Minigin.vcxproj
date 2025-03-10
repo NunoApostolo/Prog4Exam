@@ -216,7 +216,6 @@ xcopy "$(SolutionDir)Data"  "$(OutputPath)Data" /R /Y</Command>
     <ClInclude Include="..\3rdParty\imgui-1.91.8\imstb_textedit.h" />
     <ClInclude Include="..\3rdParty\imgui-1.91.8\imstb_truetype.h" />
     <ClInclude Include="Command.h" />
-    <ClInclude Include="Dictionary.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="FpsCounter.h" />
     <ClInclude Include="GameObject.h" />

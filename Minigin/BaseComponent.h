@@ -1,9 +1,10 @@
 //#include <utils.h>
 #include <functional>
-#include "Dictionary.h"
+//#include "Dictionary.h"
 #include <list>
 #include <memory>
 //#include "GameObject.h"
+#include <string>
 
 class GameObject;
 class Collider;
@@ -14,7 +15,7 @@ class BaseComponent
 public:
 	bool enabled{ true };
 	//allows to register functions
-	Dictionary<std::string, std::function<void()>> funcMap{};
+	//Dictionary<std::string, std::function<void()>> funcMap{};
 
 	BaseComponent(GameObject* objPtr, std::string type);
 	BaseComponent() = delete;
@@ -38,7 +39,7 @@ public:
 
 	template <class T, typename funcPtr>
 	void RegisterFunction(std::string name, T* obj, funcPtr func) {
-		std::function<void()> f = func;
+		//std::function<void()> f = func;
 	}
 	std::function<void()> GetFunction(std::string name);
 

@@ -36,7 +36,7 @@ void TextObject::Render() const
 {
 	if (m_textTexture != nullptr)
 	{
-		const auto& pos = gameObject->transform->position;
+		const glm::vec3& pos = gameObject->transform->position;
 		Renderer::GetInstance().RenderTexture(*m_textTexture, pos.x, pos.y);
 	}
 }
