@@ -10,10 +10,10 @@ void TextureRenderer::SetTexture(const std::string path)
 void TextureRenderer::Render() const
 {
 	if (gameObject->transform->isDirty) {
-		gameObject->transform->GetPosition();
 		for (int idx{}; idx < gameObject->childrenPtr.Size(); idx++) {
 			gameObject->childrenPtr[idx]->transform->isDirty = true;
 		}
+		gameObject->transform->GetPosition();
 	}
 
 	Renderer::GetInstance().RenderTexture(*texture, gameObject->transform->GetPosition().x, gameObject->transform->GetPosition().y);

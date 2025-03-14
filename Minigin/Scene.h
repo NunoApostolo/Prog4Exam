@@ -17,6 +17,20 @@ public:
 	void RenderUI();
 
 	GameObject* GetObjPtr(GameObject* ptr);
+	template <class Pred>
+	GameObject* FindObj(Pred pred) {
+		for (auto& obj : m_objects) {
+			if (pred(obj.get())) return obj.get();
+		}
+	}
+	template <class Pred>
+	int FindObjCount(Pred pred) {
+		int count{ 0 };
+		for (auto& obj : m_objects) {
+			if (pred(obj.get())) ++count;
+		}
+		return count;
+	}
 
 	~Scene();
 	Scene(const Scene& other) = delete;

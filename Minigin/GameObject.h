@@ -54,6 +54,7 @@ public:
 	}
 	template <typename T>
 	T* GetComponent() {
+
 		for (int idx{}; idx < components.Size(); idx++) {
 			T* comp{ dynamic_cast<T*>(components[idx].get()) };
 			if (comp != nullptr) {

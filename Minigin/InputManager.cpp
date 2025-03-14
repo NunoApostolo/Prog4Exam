@@ -2,7 +2,8 @@
 #include "InputManager.h"
 #include "backends/imgui_impl_sdl2.h"
 #include <iostream>
-#pragma comment(lib, "XInput.lib") 
+//#pragma comment(lib, "XInput.lib") 
+#include "XInput.h"
 
 bool InputManager::ProcessInput()
 {
@@ -40,6 +41,7 @@ bool InputManager::ProcessInput()
 	}
 
 	for (auto& command : commands) {
+		if (command->isGamePad) XInput::GetInstance().ProcessInput(command.get());
 		if (KeyPressed(command->GetKey())) {
 			command->ExecutePressed();
 		}

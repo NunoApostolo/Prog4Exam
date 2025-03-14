@@ -60,4 +60,3 @@ GameObject* Scene::GetObjPtr(GameObject* ptr)
 	}
 	return nullptr;
 }
-
