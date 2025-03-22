@@ -16,7 +16,7 @@ public:
 	void SetPosition(float x, float y);
 
 	TextObject(GameObject* objPtr, std::string type) 
-		: m_needsUpdate{true}, m_textTexture(nullptr), BaseComponent(objPtr, type) {}
+		: m_needsUpdate{true}, BaseComponent(objPtr, type) {}
 	virtual ~TextObject() = default;
 	TextObject(const TextObject& other) = delete;
 	TextObject(TextObject&& other) = delete;
@@ -30,6 +30,6 @@ private:
 	std::string m_text;
 	//Transform m_transform{};
 	std::shared_ptr<Font> m_font;
-	std::shared_ptr<Texture2D> m_textTexture;
+	std::vector<std::shared_ptr<Texture2D>> m_textTexture{};
 };
 

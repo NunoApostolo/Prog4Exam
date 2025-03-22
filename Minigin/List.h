@@ -1,9 +1,9 @@
+#pragma once
 #include <vector>
 #include <functional>
 //#define new new
 
 template < typename T>
-#pragma once
 class List {
     struct Node {
         T data{};

@@ -17,7 +17,8 @@ public:
 
 	void RegisterCommand(Command* command);
 private:
-	SDL_Event e;
+	SDL_Keycode keyDown{};
+	SDL_Keycode keyUp{};
 
 	std::vector<std::unique_ptr<Command>> commands;
 	std::vector<SDL_Keycode> holdKeys;

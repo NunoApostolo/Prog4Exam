@@ -7,13 +7,41 @@
 #include "Transform.h"
 #include "TextureRenderer.h"
 
-GameObject* GameObject::CreateObject(std::string name)
+std::vector<GameObject*> GameObject::objToCreate{};
+std::vector<GameObject*> GameObject::objToDelete{};
+
+GameObject* GameObject::Create(std::string name)
 {
-	auto scene = SceneManager::GetInstance().curScene;
-	auto go = std::make_unique<GameObject>(name);
-	auto gop = go.get();
-	scene->Add(std::move(go));
-	return gop;
+	GameObject* obj = new GameObject(name);
+	objToCreate.emplace_back(obj);
+	return obj;
+}
+
+void GameObject::CreateObjects(Scene* curScene)
+{
+	for (auto& obj : objToCreate) {
+		curScene->Add(std::unique_ptr<GameObject>(obj));
+	}
+	objToCreate.clear();
+}
+
+bool GameObject::Delete(GameObject* obj)
+{
+	if (std::find(objToDelete.begin(), objToDelete.end(), obj) == objToDelete.end()) {
+		if (SceneManager::GetInstance().curScene->FindObj([&](GameObject* gameobj) {return gameobj == obj; }) != nullptr) {
+			objToDelete.emplace_back(obj);
+			return true;
+		}
+	}
+	return false;
+}
+
+void GameObject::DeleteObjects(Scene* curScene)
+{
+	for (auto& obj : objToDelete) {
+		curScene->Remove(std::unique_ptr<GameObject>(obj));
+	}
+	objToDelete.clear();
 }
 
 GameObject::GameObject(std::string name, const glm::vec3& pos, const glm::vec3& scale, float rotation, GameObject* parent):
@@ -49,14 +77,7 @@ GameObject::GameObject():
 	Init();
 }
 
-GameObject::~GameObject()
-{
-	for (int idx{}; idx < components.Size(); idx++) {
-		components[idx].reset();
-	}
-	//components.CleanUp();
-	//newComponents.CleanUp();
-}
+GameObject::~GameObject() = default;
 
 void GameObject::Init()
 {
@@ -70,26 +91,26 @@ void GameObject::Init()
 void GameObject::Update()
 {
 	if (!prevEnabled && enabled) {
-		for (int idx{}; idx < components.Size(); idx++) {
+		for (size_t idx{}; idx < components.size(); idx++) {
 			components[idx]->OnEnable();
 		}
 		prevEnabled = enabled;
 	}
 	if (prevEnabled && !enabled) {
-		for (int idx{}; idx < components.Size(); idx++) {
+		for (size_t idx{}; idx < components.size(); idx++) {
 			components[idx]->OnDisable();
 		}
 		prevEnabled = enabled;
 	}
 	if (enabled) {
-		for (int idx{}; idx < newComponents.Size(); idx++) {
+		for (size_t idx{}; idx < newComponents.size(); idx++) {
 			newComponents[idx]->Start();
 			//newComponents.DeleteAt(idx);
 			//return;
 		}
-		newComponents.CleanUp();
+		newComponents.clear();
 
-		for (int idx{}; idx < components.Size(); idx++) {
+		for (size_t idx{}; idx < components.size(); idx++) {
 			components[idx]->CheckGO();
 			components[idx]->Update();
 		}
@@ -107,7 +128,7 @@ void GameObject::Update()
 void GameObject::Render()
 {
 	if (enabled) {
-		for (int idx{}; idx < components.Size(); idx++) {
+		for (size_t idx{}; idx < components.size(); idx++) {
 			components[idx]->Render();
 		}
 	}
@@ -135,7 +156,7 @@ void GameObject::Render(int order)
 void GameObject::RenderUI()
 {
 	if (enabled) {
-		for (int idx{}; idx < components.Size(); idx++) {
+		for (size_t idx{}; idx < components.size(); idx++) {
 			components[idx]->RenderUI();
 		}
 	}
@@ -144,7 +165,8 @@ void GameObject::RenderUI()
 void GameObject::SetParent(GameObject* parent)
 {
 	if (parent == nullptr && parentPtr != nullptr) {
-		parentPtr->childrenPtr.Delete([&](GameObject* go) {return go == this; });
+		parentPtr->childrenPtr.erase(std::remove_if(parentPtr->childrenPtr.begin(), parentPtr->childrenPtr.end(),([&](GameObject* go) {return go == this; })),
+			parentPtr->childrenPtr.end());
 		parentPtr = nullptr;
 	}
 	if (parent == nullptr) {
@@ -154,7 +176,7 @@ void GameObject::SetParent(GameObject* parent)
 	transform->localPosition = transform->position - parent->transform->position;
 
 	parentPtr = parent;
-	parentPtr->childrenPtr.Add(SceneManager::GetInstance().curScene->GetObjPtr(this));
+	parentPtr->childrenPtr.emplace_back(SceneManager::GetInstance().curScene->GetObjPtr(this));
 
 	transform->isDirty = true;
 }

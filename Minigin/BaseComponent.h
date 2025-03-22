@@ -1,3 +1,4 @@
+#pragma once
 //#include <utils.h>
 #include <functional>
 //#include "Dictionary.h"
@@ -9,7 +10,6 @@
 class GameObject;
 class Collider;
 //using pFunc = std::function<void()>;
-#pragma once
 class BaseComponent
 {
 public:

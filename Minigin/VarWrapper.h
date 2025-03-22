@@ -1,6 +1,6 @@
+#pragma once
 //variable wrapper, mainly used in Transform
 #include <functional>
-#pragma once
 template <typename T, class C>
 class VarWrapper : public T{
 public:

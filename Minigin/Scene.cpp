@@ -28,10 +28,12 @@ void Scene::RemoveAll()
 
 void Scene::Update()
 {
+	GameObject::CreateObjects(this);
 	for(auto& object : m_objects)
 	{
 		object.get()->Update();
 	}
+	GameObject::DeleteObjects(this);
 }
 
 void Scene::FixedUpdate()

@@ -22,6 +22,7 @@ public:
 		for (auto& obj : m_objects) {
 			if (pred(obj.get())) return obj.get();
 		}
+		return nullptr;
 	}
 	template <class Pred>
 	int FindObjCount(Pred pred) {

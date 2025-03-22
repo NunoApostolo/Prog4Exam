@@ -15,29 +15,44 @@ void TextObject::Update()
 {
 	if (m_needsUpdate)
 	{
-		const SDL_Color color = { 255,255,255,255 }; // only white text is supported now
-		const auto surf = TTF_RenderText_Blended(m_font->GetFont(), m_text.c_str(), color);
-		if (surf == nullptr) 
-		{
-			throw std::runtime_error(std::string("Render text failed: ") + SDL_GetError());
+		m_textTexture.clear();
+		std::vector<std::string> strs{};
+
+		std::string str = m_text;
+		size_t end = str.find("\n");
+		while (end != -1) {
+			strs.emplace_back(str.substr(0, end));
+			str.erase(str.begin(), str.begin() + end + 1);
+			end = str.find("\n");
 		}
-		auto texture = SDL_CreateTextureFromSurface(Renderer::GetInstance().GetSDLRenderer(), surf);
-		if (texture == nullptr) 
-		{
-			throw std::runtime_error(std::string("Create text texture from surface failed: ") + SDL_GetError());
+		strs.emplace_back(str);
+		for (auto& string : strs) {
+			const SDL_Color color = { 255,255,255,255 }; // only white text is supported now
+			const auto surf = TTF_RenderText_Blended(m_font->GetFont(), string.c_str(), color);
+			if (surf == nullptr)
+			{
+				throw std::runtime_error(std::string("Render text failed: ") + SDL_GetError());
+			}
+			auto texture = SDL_CreateTextureFromSurface(Renderer::GetInstance().GetSDLRenderer(), surf);
+			if (texture == nullptr)
+			{
+				throw std::runtime_error(std::string("Create text texture from surface failed: ") + SDL_GetError());
+			}
+			SDL_FreeSurface(surf);
+			m_textTexture.emplace_back(std::make_shared<Texture2D>(texture));
+			m_needsUpdate = false;
 		}
-		SDL_FreeSurface(surf);
-		m_textTexture = std::make_shared<Texture2D>(texture);
-		m_needsUpdate = false;
 	}
 }
 
 void TextObject::Render() const
 {
-	if (m_textTexture != nullptr)
-	{
-		const glm::vec3& pos = gameObject->transform->position;
-		Renderer::GetInstance().RenderTexture(*m_textTexture, pos.x, pos.y);
+	const glm::vec3& pos = gameObject->transform->position;
+	int row{ 0 };
+	float x{pos.x};
+	for (auto& tex : m_textTexture) {
+		Renderer::GetInstance().RenderTexture(*tex, x, pos.y + m_font->size * row);
+		row++;
 	}
 }
 

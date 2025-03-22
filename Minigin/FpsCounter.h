@@ -1,8 +1,8 @@
+#pragma once
 #include "BaseComponent.h"
 #include "GameObject.h"
 #include "TextObject.h"
 
-#pragma once
 class FpsCounter : public BaseComponent
 {
 public:

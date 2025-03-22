@@ -7,6 +7,9 @@
 
 bool InputManager::ProcessInput()
 {
+	SDL_Event e;
+	keyDown = 0;
+	keyUp = 0;
 	while (SDL_PollEvent(&e)) {
 		if (e.type == SDL_QUIT) {
 			return false;
@@ -14,18 +17,21 @@ bool InputManager::ProcessInput()
 		if (e.type == SDL_KEYDOWN) {
 			if (std::find(holdKeys.begin(), holdKeys.end(), e.key.keysym.sym) == holdKeys.end()) {
 				holdKeys.emplace_back(e.key.keysym.sym);
+				keyDown = e.key.keysym.sym;
+				for (auto& command : commands) {
+					if (KeyDown(command->GetKey())) {
+						command->ExecuteDown();
+					}
+				}
 			}
 			//KeyDown(e.key.keysym.sym);
 			//std::cout << "down" << std::endl;
-			for (auto& command : commands) {
-				if (KeyDown(command->GetKey())) {
-					command->ExecuteDown();
-				}
-			}
+
 		}
 		if (e.type == SDL_KEYUP) {
 			//KeyUp(e.key.keysym.sym);
 			holdKeys.erase(std::remove(holdKeys.begin(), holdKeys.end(), e.key.keysym.sym), holdKeys.end());
+			keyUp = e.key.keysym.sym;
 			//std::cout << "up" << std::endl;
 			for (auto& command : commands) {
 				if (KeyUp(command->GetKey())) {
@@ -40,8 +46,10 @@ bool InputManager::ProcessInput()
 		ImGui_ImplSDL2_ProcessEvent(&e);
 	}
 
+	XInput::GetInstance().ProcessInput();
+
 	for (auto& command : commands) {
-		if (command->isGamePad) XInput::GetInstance().ProcessInput(command.get());
+		if (command->isGamePad) XInput::GetInstance().ProcessCommand(command.get());
 		if (KeyPressed(command->GetKey())) {
 			command->ExecutePressed();
 		}
@@ -52,7 +60,7 @@ bool InputManager::ProcessInput()
 
 bool InputManager::KeyDown(SDL_Keycode key)
 {
-	if (e.key.keysym.sym == key && e.key.state == SDL_PRESSED) return true;
+	if (keyDown == key /*&& sdlEvent.key.state == SDL_PRESSED*/) return true;
 	return false;
 }
 
@@ -66,7 +74,7 @@ bool InputManager::KeyPressed(SDL_Keycode key)
 
 bool InputManager::KeyUp(SDL_Keycode key)
 {
-	if (e.key.keysym.sym == key && e.key.state == SDL_RELEASED) return true;
+	if (keyUp == key /*&& sdlEvent.key.state == SDL_RELEASED*/) return true;
 	return false;
 }
 

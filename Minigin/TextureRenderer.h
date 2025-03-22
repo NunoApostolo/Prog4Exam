@@ -1,10 +1,10 @@
+#pragma once
 #include "BaseComponent.h"
 #include "Texture2D.h"
 #include "ResourceManager.h"
 #include "Renderer.h"
 #include "Transform.h"
 
-#pragma once
 class TextureRenderer : public BaseComponent
 {
 public:

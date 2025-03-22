@@ -6,7 +6,7 @@ TTF_Font* Font::GetFont() const {
 	return m_font;
 }
 
-Font::Font(const std::string& fullPath, unsigned int size) : m_font(nullptr)
+Font::Font(const std::string& fullPath, unsigned int size) : m_font(nullptr) , size(size)
 {
 	m_font = TTF_OpenFont(fullPath.c_str(), size);
 	if (m_font == nullptr) 

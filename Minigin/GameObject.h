@@ -1,6 +1,7 @@
+#pragma once
 #include <string>
 #include <memory>
-#include "List.h"
+//#include "List.h"
 #include "BaseComponent.h"
 //#include <utils.h>
 #include "Time.h"
@@ -10,7 +11,7 @@
 //#include "Transform.h"
 
 class Transform;
-#pragma once
+class Scene;
 class GameObject final
 {
 public:
@@ -19,9 +20,12 @@ public:
 	Transform* transform;
 
 	GameObject* parentPtr;
-	List<GameObject*> childrenPtr; // framework won't be used much
+	std::vector<GameObject*> childrenPtr; // framework won't be used much
 
-	static GameObject* CreateObject(std::string name);
+	static GameObject* Create(std::string name);
+	static void CreateObjects(Scene* curScene);
+	static bool Delete(GameObject* obj);
+	static void DeleteObjects(Scene* curScene);
 
 	GameObject(std::string name, const glm::vec3& pos, const glm::vec3& scale, float rotarion, GameObject* parent = nullptr); // just in case, different constructor behaviour
 	GameObject(std::string name);
@@ -43,19 +47,19 @@ public:
 	template <typename T> // dynamic? / not seperating template code from header. It's a pain otherwise.
 	T* AddComponent() {
 		GameObject* ptr{ this };
-		std::shared_ptr<T> comp = std::make_shared<T>(ptr, typeid(T).name());
+		T* comp = new T(ptr, typeid(T).name());
 		//T* comp{ new T(ptr, typeid(T).name()) };
 		//std::shared_ptr<T> comp(new T(ptr, typeid(T).name()));
 
-		components.Add(comp);
-		newComponents.Add(comp);
+		components.emplace_back(std::move(std::unique_ptr<T>(comp)));
+		newComponents.emplace_back(comp);
 		comp->Awake();
-		return comp.get();
+		return comp;
 	}
 	template <typename T>
 	T* GetComponent() {
 
-		for (int idx{}; idx < components.Size(); idx++) {
+		for (size_t idx{}; idx < components.size(); idx++) {
 			T* comp{ dynamic_cast<T*>(components[idx].get()) };
 			if (comp != nullptr) {
 				return comp;
@@ -70,23 +74,27 @@ public:
 		return nullptr;
 	}
 	template <typename T>
-	List<T*> GetAllComponents() {
-		List<T*> list{};
-		for (int idx{}; idx < components.Size(); idx++) {
+	std::vector<T*> GetAllComponents() {
+		std::vector<T*> list{};
+		for (int idx{}; idx < components.size(); idx++) {
 			if (components[idx]->GetType() == typeid(T).name()) {
-				list.Add((T*)components[idx].get());
+				list.emplace_back((T*)components[idx].get());
 			}
 		}
 		return list;
 	}
 
-	List<std::shared_ptr<BaseComponent>> GetAllComponents() {
-		return components;
+	std::vector<BaseComponent*> GetAllComponents() {
+		std::vector<BaseComponent*> comps{};
+		for (auto& comp : components) {
+			comps.emplace_back(comp.get());
+		}
+		return comps;
 	}
 	template <typename T>
 	T* GetComponentInChildren() {
-		for (int cidx{}; cidx < childrenPtr.Size(); cidx++) {
-			for (int idx{}; idx < childrenPtr[cidx]->components.Size(); idx++) {
+		for (int cidx{}; cidx < childrenPtr.size(); cidx++) {
+			for (int idx{}; idx < childrenPtr[cidx]->components.size(); idx++) {
 				if (childrenPtr[cidx]->components[idx]->GetType() == typeid(T).name()) {
 					T* comp{ (T*)childrenPtr[cidx]->components[idx] };
 					return comp;
@@ -97,7 +105,7 @@ public:
 	}
 	template <typename T>
 	T* GetComponentInParent() {
-		for (int idx{}; idx < components.Size(); idx++) {
+		for (int idx{}; idx < components.size(); idx++) {
 			if (components[idx]->GetType() == typeid(T).name()) {
 				T* comp{ (T*)components[idx] };
 				return comp;
@@ -110,36 +118,31 @@ public:
 	}
 	template <typename T>
 	void DeleteComponent() {
-		for (int idx{}; idx < components.Size(); idx++) {
-			if (components[idx]->GetType() == typeid(T).name()) {
-				//Collider* col{ dynamic_cast<Collider*>(components[idx]) };
-				//if (col != nullptr) {
-				//	ColliderManager::RemoveObjCollider(col);
-				//}
-				//delete components[idx]; ??
-				components.DeleteAt(idx);
-				break;
-			}
-		}
+		std::remove(components.begin(), components.end(),
+			std::find_if(components.begin(), components.end(), [&](std::unique_ptr<BaseComponent> comp) {return comp->GetType() == typeid(T).name(); }));
+		
 	}
 
 private:
-	List<std::shared_ptr<BaseComponent>> components{};
-	List<std::shared_ptr<BaseComponent>> newComponents{};
+	std::vector<std::unique_ptr<BaseComponent>> components{};
+	std::vector<BaseComponent*> newComponents{};
 	bool prevEnabled{};
+
+	static std::vector<GameObject*> objToCreate;
+	static std::vector<GameObject*> objToDelete;
 
 	//void Copy(GameObject other, bool parent = true);
 
-	template <typename T>
-	T* AddComponentCopy(T* other) {
-		GameObject* ptr{ this };
-		std::shared_ptr<T> comp = std::make_shared<T>(new T(ptr, typeid(T).name()));
-		
-		//T* comp{ new T(ptr, typeid(T).name()) };
-		components.Add(comp);
-		newComponents.Add(comp);
-		return comp.getter();
-	}
+	//template <typename T>
+	//T* AddComponentCopy(T* other) {
+	//	GameObject* ptr{ this };
+	//	T* comp = new T(ptr, typeid(T).name());
+	//	
+	//	//T* comp{ new T(ptr, typeid(T).name()) };
+	//	components.emplace_back(std::unique_ptr<T>(comp));
+	//	newComponents.emplace_back(comp);
+	//	return comp;
+	//}
 
 };
 

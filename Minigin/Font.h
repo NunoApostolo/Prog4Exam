@@ -17,6 +17,7 @@ public:
 	Font(Font&&) = delete;
 	Font& operator= (const Font&) = delete;
 	Font& operator= (const Font&&) = delete;
+	unsigned int size;
 private:
 	_TTF_Font* m_font;
 };

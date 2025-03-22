@@ -1,3 +1,4 @@
+#pragma once
 #include "backends/imgui_impl_sdl2.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "imgui-plot-master/include/imgui_plot.h"
@@ -25,7 +26,6 @@ public:
 	transform* local;
 	int id{ 1 };
 };
-#pragma once
 class GUI : public BaseComponent
 {
 public:

@@ -16,6 +16,7 @@
 #include "Minigin.h"
 #include "TextObject.h"
 #include "TextureRenderer.h"
+#include "EventManager.h"
 #include <iostream>
 
 using namespace std::chrono;
@@ -62,8 +63,8 @@ Minigin::Minigin(const std::string &dataPath)
 		"Programming 4 assignment",
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
-		640,
-		480,
+		960,
+		700,
 		SDL_WINDOW_OPENGL
 	);
 	if (g_window == nullptr) 
@@ -93,6 +94,7 @@ void Minigin::Run(const std::function<void()>& load)
 	auto& renderer = Renderer::GetInstance();
 	auto& sceneManager = SceneManager::GetInstance();
 	auto& input = InputManager::GetInstance();
+	auto& event = EventManager::GetInstance();
 
 	nanoseconds lag{};
 	nanoseconds preTime = duration_cast<nanoseconds>(high_resolution_clock().now().time_since_epoch());
@@ -107,6 +109,7 @@ void Minigin::Run(const std::function<void()>& load)
 		Time::SetDeltaTime(duration<float>(postTime - preTime).count());
 		preTime = postTime;
 
+		event.Update();
 		doContinue = input.ProcessInput();
 
 		lag += duration_cast<nanoseconds>(postTime - preTime);

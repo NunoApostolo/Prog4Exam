@@ -9,7 +9,8 @@ public:
 	XInput();
 	~XInput();
 
-	void ProcessInput(Command* command);
+	void ProcessInput();
+	void ProcessCommand(Command* command);
 
 private:
 	class XInputImpl;
