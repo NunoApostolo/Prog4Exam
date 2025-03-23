@@ -47,7 +47,7 @@ void TextObject::Update()
 
 void TextObject::Render() const
 {
-	const glm::vec3& pos = gameObject->transform->position;
+	const Vector3& pos = gameObject->transform->position;
 	int row{ 0 };
 	float x{pos.x};
 	for (auto& tex : m_textTexture) {
@@ -65,7 +65,7 @@ void TextObject::SetText(const std::string& text)
 
 void TextObject::SetPosition(const float x, const float y)
 {
-	gameObject->transform->position = glm::vec3(x, y, 0.f);
+	gameObject->transform->position = Vector3(x, y, 0.f);
 }
 
 

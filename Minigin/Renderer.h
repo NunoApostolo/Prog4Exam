@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL.h>
 #include "Singleton.h"
+#include "Vector.h"
 
 class Texture2D;
 /**
@@ -17,6 +18,7 @@ public:
 	void Destroy();
 
 	void RenderTexture(const Texture2D& texture, float x, float y) const;
+	void RenderTexture(const Texture2D& texture, float x, float y, Vector2 pivot, float angle, float width, float height) const;
 	void RenderTexture(const Texture2D& texture, float x, float y, float width, float height) const;
 
 	SDL_Renderer* GetSDLRenderer() const;

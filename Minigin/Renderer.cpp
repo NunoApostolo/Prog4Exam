@@ -77,6 +77,19 @@ void Renderer::RenderTexture(const Texture2D& texture, const float x, const floa
 	SDL_QueryTexture(texture.GetSDLTexture(), nullptr, nullptr, &dst.w, &dst.h);
 	SDL_RenderCopy(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
 }
+void Renderer::RenderTexture(const Texture2D& texture, float x, float y, Vector2 pivot, float angle, float scaleX, float scaleY) const
+{
+	SDL_Rect dst{};
+	dst.x = static_cast<int>(x);
+	dst.y = static_cast<int>(y);
+	SDL_QueryTexture(texture.GetSDLTexture(), nullptr, nullptr, &dst.w, &dst.h);
+	dst.w = static_cast<int>(dst.w * scaleX);
+	dst.h = static_cast<int>(dst.h * scaleY);
+	const SDL_Point center{ static_cast<int>(pivot.x * dst.w), static_cast<int>(pivot.y * dst.h) };
+	dst.x -= center.x;
+	dst.y -= center.y;
+	SDL_RenderCopyEx(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst, angle, &center, SDL_FLIP_NONE);
+}
 
 void Renderer::RenderTexture(const Texture2D& texture, const float x, const float y, const float width, const float height) const
 {

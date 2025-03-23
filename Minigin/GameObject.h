@@ -4,7 +4,7 @@
 //#include "List.h"
 #include "BaseComponent.h"
 //#include <utils.h>
-#include "Time.h"
+#include "TimeManager.h"
 //#include "Camera.h"
 //#include "ColliderManager.h"
 #include <glm.hpp>
@@ -27,7 +27,7 @@ public:
 	static bool Delete(GameObject* obj);
 	static void DeleteObjects(Scene* curScene);
 
-	GameObject(std::string name, const glm::vec3& pos, const glm::vec3& scale, float rotarion, GameObject* parent = nullptr); // just in case, different constructor behaviour
+	GameObject(std::string name, const Vector3& pos, const Vector3& scale, float rotarion, GameObject* parent = nullptr); // just in case, different constructor behaviour
 	GameObject(std::string name);
 	GameObject();
 	GameObject& operator =(const GameObject&) = delete;

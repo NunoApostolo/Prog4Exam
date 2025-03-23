@@ -1,5 +1,5 @@
 //#include "pch.h"
-#include "Time.h"
+#include "TimeManager.h"
 
 float Time::deltaTime{};
 float Time::fixedDeltaTime{};

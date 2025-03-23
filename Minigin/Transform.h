@@ -11,24 +11,24 @@ public:
 
 	//typedef glm::vec3(*get)(glm::vec3);
 
-	glm::vec3& GetPosition();
+	Vector3& GetPosition();
 
-	VarWrapper<glm::vec3, Transform> position{ this, [this]() { return (this->GetPosition()); }, [this](glm::vec3 v) { this->SetPosition(v); } };
-	VarWrapper<glm::vec3, Transform> localPosition{this,[this]() { return (this->GetPosition()); },[this](const glm::vec3& v) { this->SetLocalPosition(v); } };
-	glm::vec3 scale{};
-	glm::vec3 localScale{};
+	VarWrapper<Vector3, Transform> position{ this, [this]() { return (this->GetPosition()); }, [this](const Vector3& v) { this->SetPosition(v); } };
+	VarWrapper<Vector3, Transform> localPosition{this,[this]() { return (this->GetPosition()); },[this](const Vector3& v) { this->SetLocalPosition(v); } };
+	Vector3 scale{1,1,1};
+	Vector3 localScale{1,1,1};
 
 	float rotation{};
 	float localRotation{}; // no quaternion wackiness, rotation won't be used much
 
-	glm::vec3 prevPos{}; //?
+	Vector3 prevPos{}; //?
 
 	bool isDirty{ false };
 
 	void Start() override;
 	void Update() override;
-	void SetPosition(const glm::vec3&);
-	void SetLocalPosition(const glm::vec3&);
+	void SetPosition(const Vector3&);
+	void SetLocalPosition(const Vector3&);
 protected:
 	// using these functions kinda screws everything up, so they are protected
 	// the varwrapper takes care of everything... I hope

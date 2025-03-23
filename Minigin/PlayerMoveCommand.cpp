@@ -1,13 +1,13 @@
 #include "PlayerMoveCommand.h"
 #include "Transform.h"
 
-PlayerMoveCommand::PlayerMoveCommand(GameObject* gameobject, GamePad button, glm::vec3 moveVector)
+PlayerMoveCommand::PlayerMoveCommand(GameObject* gameobject, GamePad button, Vector3 moveVector)
 	: Command(gameobject, button)
 {
 	moveVec = moveVector;
 }
 
-PlayerMoveCommand::PlayerMoveCommand(GameObject* gameobject, SDL_Keycode keyCode, glm::vec3 moveVector)
+PlayerMoveCommand::PlayerMoveCommand(GameObject* gameobject, SDL_Keycode keyCode, Vector3 moveVector)
 	: Command(gameobject, keyCode)
 {
 	moveVec = moveVector;

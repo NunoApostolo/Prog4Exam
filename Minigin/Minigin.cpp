@@ -7,16 +7,6 @@
 #include <chrono>
 #include <thread>
 #include "Minigin.h"
-#include "InputManager.h"
-#include "SceneManager.h"
-#include "Scene.h"
-#include "Renderer.h"
-#include "ResourceManager.h"
-#include "Time.h"
-#include "Minigin.h"
-#include "TextObject.h"
-#include "TextureRenderer.h"
-#include "EventManager.h"
 #include <iostream>
 
 using namespace std::chrono;

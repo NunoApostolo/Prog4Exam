@@ -11,9 +11,9 @@ public:
 	bool KeyDown(SDL_Keycode key);
 	bool KeyPressed(SDL_Keycode key);
 	bool KeyUp(SDL_Keycode key);
-	bool MouseDown(bool left);
-	bool MousePressed(bool left);
-	bool MouseUp(bool left);
+	bool MouseDown(int btn);
+	bool MousePressed(int btn);
+	bool MouseUp(int btn);
 
 	void RegisterCommand(Command* command);
 private:
@@ -22,6 +22,13 @@ private:
 
 	std::vector<std::unique_ptr<Command>> commands;
 	std::vector<SDL_Keycode> holdKeys;
+	Vector2 mousePos{};
+	bool mouseDown{false};
+	bool mouseHold{false};
+	bool mouseUp{false};
+	bool mouse2Down{ false };
+	bool mouse2Hold{ false };
+	bool mouse2Up{ false };
 	//std::vector<WORD> holdBtns;
 	//std::vector<WORD> prevBtns;
 	//SDL_Keycode downKey;

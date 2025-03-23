@@ -44,7 +44,7 @@ void GameObject::DeleteObjects(Scene* curScene)
 	objToDelete.clear();
 }
 
-GameObject::GameObject(std::string name, const glm::vec3& pos, const glm::vec3& scale, float rotation, GameObject* parent):
+GameObject::GameObject(std::string name, const Vector3& pos, const Vector3& scale, float rotation, GameObject* parent):
 	name{name},
 	enabled{true},
 	parentPtr{parent},

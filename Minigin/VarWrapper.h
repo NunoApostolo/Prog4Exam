@@ -71,8 +71,16 @@ public:
 		setter(getter() + rhs.getter());
 		return *this;
 	}
+	T& operator +(const T& rhs) {
+		setter(getter() + rhs);
+		return *this;
+	}
 	T& operator -(VarWrapper<T, C>& rhs) {
 		setter(getter() - rhs.getter());
+		return *this;
+	}
+	T& operator -(const T& rhs) {
+		setter(getter() - rhs);
 		return *this;
 	}
 
@@ -85,6 +93,11 @@ public:
 	}
 
 	void SetVec3(glm::vec3 vec) {
+		x = vec.x;
+		y = vec.y;
+		z = vec.z;
+	}
+	void SetVec3(Vector3 vec) {
 		x = vec.x;
 		y = vec.y;
 		z = vec.z;

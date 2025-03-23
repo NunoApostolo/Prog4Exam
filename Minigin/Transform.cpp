@@ -1,11 +1,11 @@
 #include "Transform.h"
 #include "GameObject.h"
 
-glm::vec3& Transform::GetPosition() // do not assign possition with = operator here -> endless recursion lol
+Vector3& Transform::GetPosition() // do not assign possition with = operator here -> endless recursion lol
 {
 	if (isDirty) {
 		if (gameObject->parentPtr != nullptr) {
-			glm::vec3 pPos{ gameObject->parentPtr->transform->GetPosition() };
+			Vector3 pPos{ gameObject->parentPtr->transform->GetPosition() };
 			SetPosition(localPosition + pPos);
 		}
 		else SetPosition(localPosition);
@@ -17,9 +17,9 @@ glm::vec3& Transform::GetPosition() // do not assign possition with = operator h
 
 void Transform::SetPosition(const float x, const float y, const float z)
 {
-	SetPosition(glm::vec3(x, y, z));
+	SetPosition(Vector3(x, y, z));
 }
-void Transform::SetPosition(const glm::vec3& pos) // same as local if no parent
+void Transform::SetPosition(const Vector3& pos) // same as local if no parent
 {
 	isDirty = true;
 	position.SetVec3(pos);
@@ -28,7 +28,7 @@ void Transform::SetPosition(const glm::vec3& pos) // same as local if no parent
 		localPosition.SetVec3(position);
 	}
 	else {
-		localPosition.SetVec3(static_cast<glm::vec3>(position) - static_cast<glm::vec3>(gameObject->parentPtr->transform->position));
+		localPosition.SetVec3(static_cast<Vector3>(position) - static_cast<Vector3>(gameObject->parentPtr->transform->position));
 		localPosition.cache = localPosition;
 	}
 
@@ -36,10 +36,10 @@ void Transform::SetPosition(const glm::vec3& pos) // same as local if no parent
 
 void Transform::SetLocalPosition(float x, float y, float z)
 {
-	SetLocalPosition(glm::vec3(x, y, z));
+	SetLocalPosition(Vector3(x, y, z));
 }
 
-void Transform::SetLocalPosition(const glm::vec3& pos)
+void Transform::SetLocalPosition(const Vector3& pos)
 {
 	isDirty = true;
 	localPosition.SetVec3(pos);
@@ -54,6 +54,6 @@ void Transform::Start()
 
 void Transform::Update()
 {
-	position.CheckCache(static_cast<glm::vec3>(position));
-	localPosition.CheckCache(static_cast<glm::vec3>(localPosition));
+	position.CheckCache(static_cast<Vector3>(position));
+	localPosition.CheckCache(static_cast<Vector3>(localPosition));
 }

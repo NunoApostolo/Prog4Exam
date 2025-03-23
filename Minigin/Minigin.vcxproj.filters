@@ -19,6 +19,15 @@
     <Filter Include="Source Files\imgui">
       <UniqueIdentifier>{aafbcc4e-85dd-47bf-8dbd-2586f98af9a6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{cf1c2102-e88e-4d45-8a5d-ba36cde388d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Header Files">
+      <UniqueIdentifier>{866edc8e-2224-4009-8581-22479e812402}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\SourceFiles">
+      <UniqueIdentifier>{c8c4a7b7-0e43-45b3-8aa0-8dfc34d17fa3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Singleton.h">
@@ -57,7 +66,7 @@
     <ClInclude Include="Minigin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Time.h">
+    <ClInclude Include="TimeManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BaseComponent.h">
@@ -132,6 +141,9 @@
     <ClInclude Include="EventHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Vector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ResourceManager.cpp">
@@ -162,9 +174,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Font.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Minigin.cpp">
@@ -233,8 +242,8 @@
     <ClCompile Include="..\3rdParty\imgui-1.91.8\imgui_widgets.cpp">
       <Filter>Source Files\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="EventHandler.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Main.cpp">
+      <Filter>Game\SourceFiles</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

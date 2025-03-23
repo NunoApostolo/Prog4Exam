@@ -15,18 +15,18 @@ void Player::Start()
 {
 	//id = SceneManager::GetInstance().curScene->FindObjCount([this](GameObject* obj) {return obj->GetComponent<Player>() != nullptr; }) - 1;
 	if (id == 0) {
-		InputManager::GetInstance().RegisterCommand(new PlayerMoveCommand(gameObject, SDLK_d, glm::vec3(speed, 0, 0)));
-		InputManager::GetInstance().RegisterCommand(new PlayerMoveCommand(gameObject, SDLK_a, glm::vec3(-speed, 0, 0)));
-		InputManager::GetInstance().RegisterCommand(new PlayerMoveCommand(gameObject, SDLK_w, glm::vec3(0,-speed, 0)));
-		InputManager::GetInstance().RegisterCommand(new PlayerMoveCommand(gameObject, SDLK_s, glm::vec3(0, speed, 0)));
+		InputManager::GetInstance().RegisterCommand(new PlayerMoveCommand(gameObject, SDLK_d, Vector3(speed, 0, 0)));
+		InputManager::GetInstance().RegisterCommand(new PlayerMoveCommand(gameObject, SDLK_a, Vector3(-speed, 0, 0)));
+		InputManager::GetInstance().RegisterCommand(new PlayerMoveCommand(gameObject, SDLK_w, Vector3(0,-speed, 0)));
+		InputManager::GetInstance().RegisterCommand(new PlayerMoveCommand(gameObject, SDLK_s, Vector3(0, speed, 0)));
 		InputManager::GetInstance().RegisterCommand(new HurtCommand(gameObject, SDLK_c, 1));
 		InputManager::GetInstance().RegisterCommand(new ScoreCommand(gameObject, SDLK_z, 10));
 	}
 	else if (id == 1) {
-		InputManager::GetInstance().RegisterCommand(new PlayerMoveCommand(gameObject, GamePad::DPad_Right, glm::vec3(speed, 0, 0)));
-		InputManager::GetInstance().RegisterCommand(new PlayerMoveCommand(gameObject, GamePad::DPad_Left, glm::vec3(-speed, 0, 0)));
-		InputManager::GetInstance().RegisterCommand(new PlayerMoveCommand(gameObject, GamePad::DPad_Up, glm::vec3(0, -speed, 0)));
-		InputManager::GetInstance().RegisterCommand(new PlayerMoveCommand(gameObject, GamePad::DPad_Down, glm::vec3(0, speed, 0)));
+		InputManager::GetInstance().RegisterCommand(new PlayerMoveCommand(gameObject, GamePad::DPad_Right, Vector3(speed, 0, 0)));
+		InputManager::GetInstance().RegisterCommand(new PlayerMoveCommand(gameObject, GamePad::DPad_Left, Vector3(-speed, 0, 0)));
+		InputManager::GetInstance().RegisterCommand(new PlayerMoveCommand(gameObject, GamePad::DPad_Up, Vector3(0, -speed, 0)));
+		InputManager::GetInstance().RegisterCommand(new PlayerMoveCommand(gameObject, GamePad::DPad_Down, Vector3(0, speed, 0)));
 		InputManager::GetInstance().RegisterCommand(new HurtCommand(gameObject, GamePad::X, 1));
 		InputManager::GetInstance().RegisterCommand(new ScoreCommand(gameObject, GamePad::A, 10));
 	}
@@ -39,10 +39,10 @@ void Player::Start()
 	text->SetText("#lives: " + std::to_string(health) + "\n" + std::to_string(score), ResourceManager::GetInstance().LoadFont("Lingua.otf", 30));
 
 	if (id == 0) {
-		text->gameObject->transform->position = glm::vec3(5, 100, 0);
+		text->gameObject->transform->position = Vector3(5, 100, 0);
 	}
 	else if (id == 1) {
-		text->gameObject->transform->position = glm::vec3(5, 180, 0);
+		text->gameObject->transform->position = Vector3(5, 180, 0);
 	}
 
 	PlayerUI* obs = text->gameObject->AddComponent<PlayerUI>();
@@ -56,6 +56,9 @@ void Player::Start()
 
 void Player::Update()
 {
+	if (id == 0) {
+		gameObject->transform->localRotation += 50 * Time::deltaTime;
+	}
 	//temp
 	//if (InputManager::GetInstance().KeyDown(SDLK_c)) {
 	//	TakeDamage(1);

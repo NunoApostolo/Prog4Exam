@@ -10,9 +10,37 @@ bool InputManager::ProcessInput()
 	SDL_Event e;
 	keyDown = 0;
 	keyUp = 0;
+	mouseDown = false;
+	mouseUp = false;
 	while (SDL_PollEvent(&e)) {
+		
 		if (e.type == SDL_QUIT) {
 			return false;
+		}
+		if (e.type == SDL_MOUSEMOTION) {
+			mousePos.x = static_cast<float>(e.motion.x);
+			mousePos.y = static_cast<float>(e.motion.y);
+		}
+		if (e.type == SDL_MOUSEBUTTONDOWN) {
+			if (e.button.button == SDL_BUTTON_LEFT) {
+				mouseDown = true;
+				mouseHold = true;
+			}
+			if (e.button.button == SDL_BUTTON_RIGHT) {
+				mouse2Down = true;
+				mouse2Hold = true;
+			}
+
+		}
+		if (e.type == SDL_MOUSEBUTTONUP) {
+			if (e.button.button == SDL_BUTTON_LEFT) {
+				mouseHold = false;
+				mouseUp = true;
+			}
+			if (e.button.button == SDL_BUTTON_RIGHT) {
+				mouse2Hold = false;
+				mouse2Up = true;
+			}
 		}
 		if (e.type == SDL_KEYDOWN) {
 			if (std::find(holdKeys.begin(), holdKeys.end(), e.key.keysym.sym) == holdKeys.end()) {
@@ -78,26 +106,26 @@ bool InputManager::KeyUp(SDL_Keycode key)
 	return false;
 }
 
-bool InputManager::MouseDown(bool left)
+bool InputManager::MouseDown(int btn)
 {
-	if (left) {
-
+	if (btn == 0) {
+		return mouseDown;
 	}
 	return false;
 }
 
-bool InputManager::MousePressed(bool left)
+bool InputManager::MousePressed(int btn)
 {
-	if (left) {
-
+	if (btn == 0) {
+		return mouseHold;
 	}
 	return false;
 }
 
-bool InputManager::MouseUp(bool left)
+bool InputManager::MouseUp(int btn)
 {
-	if (left) {
-
+	if (btn == 0) {
+		return mouseUp;
 	}
 	return false;
 }

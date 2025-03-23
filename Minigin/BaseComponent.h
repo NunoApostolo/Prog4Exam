@@ -6,6 +6,7 @@
 #include <memory>
 //#include "GameObject.h"
 #include <string>
+#include "Vector.h"
 
 class GameObject;
 class Collider;

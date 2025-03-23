@@ -16,6 +16,19 @@ void TextureRenderer::Render() const
 		gameObject->transform->GetPosition();
 	}
 
-	Renderer::GetInstance().RenderTexture(*texture, gameObject->transform->GetPosition().x, gameObject->transform->GetPosition().y);
+	//Renderer::GetInstance().RenderTexture(*texture, gameObject->transform->GetPosition().x, gameObject->transform->GetPosition().y);
+	Renderer::GetInstance().RenderTexture(*texture, gameObject->transform->GetPosition().x, 
+		gameObject->transform->GetPosition().y,
+		pivot,
+		gameObject->transform->localRotation,
+		gameObject->transform->scale.x,
+		gameObject->transform->scale.y);
 
 }
+
+// pivot between 0 and 1
+void TextureRenderer::SetPivot(Vector2 pivotPercent) {
+	if (pivotPercent.x > 1 || pivotPercent.y > 1 || pivotPercent.x < 0 || pivotPercent.y < 0) return;
+	pivot = pivotPercent;
+}
+

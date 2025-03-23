@@ -4,12 +4,12 @@
 class PlayerMoveCommand : public Command
 {
 public:
-	PlayerMoveCommand(GameObject* gameobject, GamePad btn, glm::vec3 moveVector);
-	PlayerMoveCommand(GameObject* gameobject, SDL_Keycode keyCode, glm::vec3 moveVector);
+	PlayerMoveCommand(GameObject* gameobject, GamePad btn, Vector3 moveVector);
+	PlayerMoveCommand(GameObject* gameobject, SDL_Keycode keyCode, Vector3 moveVector);
 
 	void ExecutePressed() override;
 
 private:
-	glm::vec3 moveVec{};
+	Vector3 moveVec{};
 };
 
