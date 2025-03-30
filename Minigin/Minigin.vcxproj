@@ -227,9 +227,6 @@ xcopy "$(SolutionDir)Data"  "$(OutputPath)Data" /R /Y</Command>
     <ClInclude Include="Minigin.h" />
     <ClInclude Include="BaseComponent.h" />
     <ClInclude Include="Observer.h" />
-    <ClInclude Include="PlayerMoveCommand.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="PlayerUI.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Scene.h" />
@@ -261,13 +258,9 @@ xcopy "$(SolutionDir)Data"  "$(OutputPath)Data" /R /Y</Command>
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="InputManager.cpp" />
-    <ClCompile Include="Main.cpp" />
     <ClCompile Include="Minigin.cpp" />
     <ClCompile Include="BaseComponent.cpp" />
     <ClCompile Include="Observer.cpp" />
-    <ClCompile Include="PlayerMoveCommand.cpp" />
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="PlayerUI.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Scene.cpp" />

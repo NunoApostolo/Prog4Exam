@@ -14,6 +14,7 @@
 #endif
 
 #include <Minigin.h>
+#include "Player.h"
 void load()
 {
 	auto& scene = SceneManager::GetInstance().CreateScene("Demo");
@@ -25,7 +26,7 @@ void load()
 	tank1->GetComponent<TextureRenderer>()->SetPivot(Vector2(0.5,0.5));
 	//go->AddComponent <MoveObjTest>();
 	tank1->AddComponent<Player>()->Init(0);
-	tank1->transform->position = Vector3(0, 0, 0);
+	tank1->transform->position = Vector3(100, 100, 0);
 	//tank1->transform->localRotation = 45;
 	//tank1->transform->scale = Vector2(2, 1);
 

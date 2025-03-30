@@ -17,7 +17,6 @@
 #include "Minigin.h"
 #include "TextObject.h"
 #include "TextureRenderer.h"
-#include "Player.h"
 #include "EventManager.h"
 
 class Minigin

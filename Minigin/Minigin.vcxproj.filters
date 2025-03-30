@@ -19,15 +19,6 @@
     <Filter Include="Source Files\imgui">
       <UniqueIdentifier>{aafbcc4e-85dd-47bf-8dbd-2586f98af9a6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game">
-      <UniqueIdentifier>{cf1c2102-e88e-4d45-8a5d-ba36cde388d6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\Header Files">
-      <UniqueIdentifier>{866edc8e-2224-4009-8581-22479e812402}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\SourceFiles">
-      <UniqueIdentifier>{c8c4a7b7-0e43-45b3-8aa0-8dfc34d17fa3}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Singleton.h">
@@ -84,12 +75,6 @@
     <ClInclude Include="Command.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerMoveCommand.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="XInput.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -97,9 +82,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Subject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EventManager.h">
@@ -194,12 +176,6 @@
     <ClCompile Include="Command.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerMoveCommand.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="XInput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -207,9 +183,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Subject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="EventManager.cpp">
@@ -241,9 +214,6 @@
     </ClCompile>
     <ClCompile Include="..\3rdParty\imgui-1.91.8\imgui_widgets.cpp">
       <Filter>Source Files\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="Main.cpp">
-      <Filter>Game\SourceFiles</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
