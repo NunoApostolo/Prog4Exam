@@ -10,16 +10,18 @@
 
 class GameObject;
 class Collider;
+class IMouseHandler;
 //using pFunc = std::function<void()>;
 class BaseComponent
 {
+	friend class GameObject;
+	friend class IMouseHandler;
 public:
 	bool enabled{ true };
 	//allows to register functions
 	//Dictionary<std::string, std::function<void()>> funcMap{};
 
-	BaseComponent(GameObject* objPtr, std::string type);
-	BaseComponent() = delete;
+	BaseComponent();
 	BaseComponent(const BaseComponent&) = delete;
 	BaseComponent(BaseComponent&&) = delete;
 	BaseComponent& operator =(const BaseComponent&) = delete;
@@ -38,6 +40,7 @@ public:
 	virtual void OnDisable() {};
 	virtual void OnEnable() {};
 
+	//this is all unsused
 	template <class T, typename funcPtr>
 	void RegisterFunction(std::string name, T* obj, funcPtr func) {
 		//std::function<void()> f = func;
@@ -50,12 +53,14 @@ public:
 	virtual void OnCollition(Collider*) {};
 	virtual void OnCollitionExit(Collider*) {};
 
-	GameObject* gameObject; // need vars in object
+	GameObject* gameObject{}; // need vars in object
 	void CheckGO();
 protected:
-	std::string classType; // something malicious is brewing
+	std::string classType{}; // something malicious is brewing
+
+	void Initialize(GameObject* objPtr, std::string type);
 
 private:
-	GameObject* checkGO{};
+	GameObject* checkGO{}; // to check if gameobject changed
 };
 

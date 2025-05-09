@@ -13,9 +13,46 @@ void EventManager::Update()
 	while (PullQueue(e, args))
 	{
 		for (size_t idx{ 0 }; idx < eventHandlers.size(); idx++) {
-			if (eventHandlers[idx]->HasEventID(e)) {
-				eventHandlers[idx]->HandleEvent(e, args);
+			if (eventHandlers[idx]->HasEventID(static_cast<uint16_t>(e))) {
+				if (e >= Event::End) {
+					eventHandlers[idx]->HandleEvent(static_cast<Event>(static_cast<uint16_t>(e)), args);
+				}
+				else {
+					eventHandlers[idx]->HandleEvent(e, args);
+				}
 			} 
+		}
+	}
+}
+
+void EventManager::AddListener(GameObject* obj, IEventHandler* handler, Event eventIDs)
+{
+	//EventHandler* event = new Class(eventID, (args));
+	handler->Init(obj, eventIDs);
+	eventHandlers.emplace_back(handler);
+	//return event; 
+}
+
+void EventManager::AddListener(GameObject* obj, IEventHandler* handler, std::vector<Event> eventIDs)
+{
+	//EventHandler* event = new Class(eventID, (args));
+	handler->Init(obj, eventIDs);
+	eventHandlers.emplace_back(handler);
+	//return event; 
+}
+
+void EventManager::RemoveListener(IEventHandler* handler)
+{
+	eventHandlers.erase(std::find(eventHandlers.begin(), eventHandlers.end(), handler));
+}
+
+void EventManager::RemoveListener(GameObject* obj)
+{
+	for (size_t i{ 0 }; i < eventHandlers.size(); ++i) {
+		if (eventHandlers[i]->GetObj() == obj) {
+			eventHandlers.erase(eventHandlers.begin() + i);
+			RemoveListener(obj);
+			return;
 		}
 	}
 }

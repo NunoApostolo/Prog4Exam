@@ -9,15 +9,15 @@ public:
 	VarWrapper() {}
 	VarWrapper(C* pClass, std::function<void()> getter) {}
 
-	VarWrapper(C* pClass, std::function<T()> getter, std::function<void(const T&)> setter) {
+	VarWrapper(C* pClass, std::function<T()> getter, std::function<void(const T&)> setter, T init = T{}) {
 		//this->var = var;
 		this->pClass = pClass;
 		this->getter = getter;
 		this->setter = setter;
 		//this->csetter = nullptr;
-		T::x = 0;
-		T::y = 0;
-		T::z = 0;
+		T::x = init.x;
+		T::y = init.y;
+		T::z = init.z;
 		cache = *this;
 	}
 	//VarWrapper(C* pClass, std::function<T()> getter, std::function<void(const T&)> setter) {
@@ -67,23 +67,32 @@ public:
 		//	//(pClass->*csetter)(rhs);
 		return *this;
 	}
-	T& operator +(VarWrapper<T, C>& rhs) {
-		setter(getter() + rhs.getter());
+	const T operator +(VarWrapper<T, C>& rhs) {
+		T t{ getter() + rhs.getter() };
+		return t;
+	}
+	const T operator +(const T& rhs) {
+		T t{ getter() + rhs };
+		return t;
+	}
+	const T& operator+=(const Vector3& rhs) {
+		setter(Vector3(x + rhs.x, y + rhs.y, z + rhs.z));
 		return *this;
 	}
-	T& operator +(const T& rhs) {
-		setter(getter() + rhs);
+	const T operator -(VarWrapper<T, C>& rhs) {
+		//setter();
+		T t{ getter() - rhs.getter() };
+		return t;
+	}
+	const T operator -(const T& rhs) {
+		//setter(getter() - rhs);
+		T t{ getter() - rhs };
+		return t;
+	}
+	const T& operator-=(const Vector3& rhs) {
+		setter(Vector3(x - rhs.x, y - rhs.y, z - rhs.z));
 		return *this;
 	}
-	T& operator -(VarWrapper<T, C>& rhs) {
-		setter(getter() - rhs.getter());
-		return *this;
-	}
-	T& operator -(const T& rhs) {
-		setter(getter() - rhs);
-		return *this;
-	}
-
 	template <typename T>
 	void CheckCache(T val) { // check if axis was changed
 		if (cache != val) {
@@ -96,11 +105,13 @@ public:
 		x = vec.x;
 		y = vec.y;
 		z = vec.z;
+		cache = vec;
 	}
 	void SetVec3(Vector3 vec) {
 		x = vec.x;
 		y = vec.y;
 		z = vec.z;
+		cache = vec;
 	}
 
 	T cache{};

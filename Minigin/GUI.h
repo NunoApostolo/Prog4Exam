@@ -29,8 +29,6 @@ public:
 class GUI : public BaseComponent
 {
 public:
-	GUI(GameObject* objPtr, std::string type) : BaseComponent(objPtr, type) {}
-
 	void Start() override;
 	void Update() override;
 	void RenderUI() override;

@@ -6,32 +6,54 @@
 #include "BaseComponent.h"
 #include "Transform.h"
 #include "TextureRenderer.h"
+#include "Console.h"
 
-std::vector<GameObject*> GameObject::objToCreate{};
+std::vector<std::unique_ptr<GameObject>> GameObject::objToCreate{};
 std::vector<GameObject*> GameObject::objToDelete{};
 
 GameObject* GameObject::Create(std::string name)
 {
 	GameObject* obj = new GameObject(name);
-	objToCreate.emplace_back(obj);
+	objToCreate.emplace_back(std::unique_ptr<GameObject>(obj));
 	return obj;
 }
 
 void GameObject::CreateObjects(Scene* curScene)
 {
 	for (auto& obj : objToCreate) {
-		curScene->Add(std::unique_ptr<GameObject>(obj));
+		obj->SetInternActive(obj->GetActive());
+		curScene->Add(std::move(obj));
 	}
 	objToCreate.clear();
 }
 
 bool GameObject::Delete(GameObject* obj)
 {
+
 	if (std::find(objToDelete.begin(), objToDelete.end(), obj) == objToDelete.end()) {
+
+		EventManager::GetInstance().RemoveListener(obj);
 		if (SceneManager::GetInstance().curScene->FindObj([&](GameObject* gameobj) {return gameobj == obj; }) != nullptr) {
 			objToDelete.emplace_back(obj);
-			return true;
+			obj->deleted = true;
+			for (auto& child : obj->childrenPtr) {
+				Delete(child);
+				//objToDelete.emplace_back(child);
+			}
+			if (obj->parentPtr != nullptr) {
+				//obj->SetParent(nullptr);
+			}
 		}
+		else {
+			obj->deleted = true;
+			obj->SetParent(nullptr);
+			for (auto& child : obj->childrenPtr) {
+				Delete(child);
+				//objToDelete.emplace_back(child);
+			}
+			objToCreate.erase(std::find_if(objToCreate.begin(), objToCreate.end(), [obj](std::unique_ptr<GameObject>& o) {return o.get() == obj; }));
+		}
+		return true;
 	}
 	return false;
 }
@@ -39,14 +61,16 @@ bool GameObject::Delete(GameObject* obj)
 void GameObject::DeleteObjects(Scene* curScene)
 {
 	for (auto& obj : objToDelete) {
-		curScene->Remove(std::unique_ptr<GameObject>(obj));
+		obj->SetParent(nullptr);
+	}
+	for (auto& obj : objToDelete) {
+		curScene->Remove(obj);
 	}
 	objToDelete.clear();
 }
 
 GameObject::GameObject(std::string name, const Vector3& pos, const Vector3& scale, float rotation, GameObject* parent):
 	name{name},
-	enabled{true},
 	parentPtr{parent},
 	childrenPtr{},
 	prevEnabled{enabled}
@@ -59,7 +83,6 @@ GameObject::GameObject(std::string name, const Vector3& pos, const Vector3& scal
 
 GameObject::GameObject(std::string name):
 	name{name },
-	enabled{ true },
 	parentPtr{  },
 	childrenPtr{},
 	prevEnabled{ enabled }
@@ -69,7 +92,6 @@ GameObject::GameObject(std::string name):
 
 GameObject::GameObject():
 	name{ },
-	enabled{ true },
 	parentPtr{  },
 	childrenPtr{},
 	prevEnabled{ enabled }
@@ -77,7 +99,7 @@ GameObject::GameObject():
 	Init();
 }
 
-GameObject::~GameObject() = default;
+GameObject::~GameObject() {}
 
 void GameObject::Init()
 {
@@ -90,6 +112,7 @@ void GameObject::Init()
 
 void GameObject::Update()
 {
+	if (deleted) return;
 	if (!prevEnabled && enabled) {
 		for (size_t idx{}; idx < components.size(); idx++) {
 			components[idx]->OnEnable();
@@ -127,6 +150,7 @@ void GameObject::Update()
 
 void GameObject::Render()
 {
+	if (deleted) return;
 	if (enabled) {
 		for (size_t idx{}; idx < components.size(); idx++) {
 			components[idx]->Render();
@@ -135,9 +159,9 @@ void GameObject::Render()
 
 }
 
-void GameObject::Render(int order)
+void GameObject::Render(int renderOrder)
 {
-	order++;
+	renderOrder++;
 	if (!enabled) return;
 	//SpriteRenderer* spRender = GetComponent <SpriteRenderer>();
 	//if (spRender != nullptr && spRender->GetOrder() == order) {
@@ -176,9 +200,45 @@ void GameObject::SetParent(GameObject* parent)
 	transform->localPosition = transform->position - parent->transform->position;
 
 	parentPtr = parent;
-	parentPtr->childrenPtr.emplace_back(SceneManager::GetInstance().curScene->GetObjPtr(this));
+	parentPtr->childrenPtr.emplace_back(this);
+	transform->SetScale(parentPtr->transform->GetScale());
 
 	transform->isDirty = true;
+}
+
+void GameObject::SetActive(bool active) {
+	enabled = active;
+	localEnabled = active;
+	for (auto& child : childrenPtr) {
+		child->SetInternActive(active);
+	}
+}
+
+void GameObject::SetInternActive(bool active)
+{
+	if (!active || !localEnabled) {
+		enabled = false;
+		for (auto& child : childrenPtr) {
+			child->SetInternActive(enabled);
+		}
+		return;
+	}
+	if ((localEnabled && active) || (!localEnabled && !active)) {
+		SetActive(active);
+	}
+
+
+}
+
+bool GameObject::GetActive()
+{
+	if (parentPtr != nullptr) {
+		if (!enabled) {
+			return false;
+		}
+	}
+	if (parentPtr == nullptr) return enabled;
+	return parentPtr->GetActive();
 }
 
 //GameObject* GameObject::FindChild(std::string cname)

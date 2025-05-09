@@ -14,10 +14,12 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include "TimeManager.h"
-#include "Minigin.h"
 #include "TextObject.h"
 #include "TextureRenderer.h"
 #include "EventManager.h"
+#include "Camera.h"
+#include "Timer.h"
+#include "ServiceLocator.h"
 
 class Minigin
 {

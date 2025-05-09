@@ -8,7 +8,7 @@ class Scene final
 	friend Scene& SceneManager::CreateScene(const std::string& name);
 public:
 	void Add(std::unique_ptr<GameObject> object);
-	void Remove(std::unique_ptr<GameObject> object);
+	void Remove(GameObject* object);
 	void RemoveAll();
 
 	void Update();
@@ -16,6 +16,9 @@ public:
 	void Render() const;
 	void RenderUI();
 
+	void SetOrderFlag();
+
+	std::vector<GameObject*> GetAllObjs();
 	GameObject* GetObjPtr(GameObject* ptr);
 	template <class Pred>
 	GameObject* FindObj(Pred pred) {
@@ -41,7 +44,9 @@ public:
 
 private:
 	explicit Scene(const std::string& name);
+	void OrderObjects();
 
+	bool orderFlag{ false };
 	std::string m_name;
 	std::vector <std::unique_ptr<GameObject>> m_objects{};
 

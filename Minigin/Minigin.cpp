@@ -14,6 +14,7 @@ SDL_Window* g_window{};
 
 void PrintSDLVersion()
 {
+	//AllocConsole();
 	SDL_version version{};
 	SDL_VERSION(&version);
 	printf("We compiled against SDL version %u.%u.%u ...\n",
@@ -39,7 +40,7 @@ void PrintSDLVersion()
 	printf("We are linking against SDL_ttf version %u.%u.%u.\n",
 		version.major, version.minor, version.patch);
 }
-
+Rect viewPort;
 Minigin::Minigin(const std::string &dataPath)
 {
 	PrintSDLVersion();
@@ -49,12 +50,14 @@ Minigin::Minigin(const std::string &dataPath)
 		throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
 	}
 
+	viewPort = Rect(700, 800);
+
 	g_window = SDL_CreateWindow(
-		"Programming 4 assignment",
+		"Game",
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
-		960,
-		700,
+		viewPort.width,
+		viewPort.height,
 		SDL_WINDOW_OPENGL
 	);
 	if (g_window == nullptr) 
@@ -65,6 +68,8 @@ Minigin::Minigin(const std::string &dataPath)
 	Renderer::GetInstance().Init(g_window);
 
 	ResourceManager::GetInstance().Init(dataPath);
+
+
 }
 
 Minigin::~Minigin()
@@ -79,12 +84,15 @@ Minigin::~Minigin()
 
 void Minigin::Run(const std::function<void()>& load)
 {
+	Camera::GetMainCamera().SetViewPort(viewPort);
+
 	load();
 
 	auto& renderer = Renderer::GetInstance();
 	auto& sceneManager = SceneManager::GetInstance();
 	auto& input = InputManager::GetInstance();
 	auto& event = EventManager::GetInstance();
+	//auto& timer = Timer::GetInstance();
 
 	nanoseconds lag{};
 	nanoseconds preTime = duration_cast<nanoseconds>(high_resolution_clock().now().time_since_epoch());
@@ -101,6 +109,7 @@ void Minigin::Run(const std::function<void()>& load)
 
 		event.Update();
 		doContinue = input.ProcessInput();
+		//timer.UpdateTimers();
 
 		lag += duration_cast<nanoseconds>(postTime - preTime);
 		if (lag >= 1000ns) {
@@ -119,4 +128,6 @@ void Minigin::Run(const std::function<void()>& load)
 
 		if (wait > 0ms) std::this_thread::sleep_for(wait);
 	}
+
+	std::cin;
 }

@@ -14,6 +14,9 @@ public:
 	bool MouseDown(int btn);
 	bool MousePressed(int btn);
 	bool MouseUp(int btn);
+	float GetScrollDelta();
+	Vector2 GetMousePos();
+	Vector2 GetWorldMousePos();
 
 	void RegisterCommand(Command* command);
 private:
@@ -29,6 +32,7 @@ private:
 	bool mouse2Down{ false };
 	bool mouse2Hold{ false };
 	bool mouse2Up{ false };
+	float scrollDelta{ 0 };
 	//std::vector<WORD> holdBtns;
 	//std::vector<WORD> prevBtns;
 	//SDL_Keycode downKey;

@@ -4,6 +4,8 @@
 #include <iostream>
 //#pragma comment(lib, "XInput.lib") 
 #include "XInput.h"
+#include "EventManager.h"
+#include "Camera.h"
 
 bool InputManager::ProcessInput()
 {
@@ -12,6 +14,7 @@ bool InputManager::ProcessInput()
 	keyUp = 0;
 	mouseDown = false;
 	mouseUp = false;
+	scrollDelta = 0;
 	while (SDL_PollEvent(&e)) {
 		
 		if (e.type == SDL_QUIT) {
@@ -20,15 +23,18 @@ bool InputManager::ProcessInput()
 		if (e.type == SDL_MOUSEMOTION) {
 			mousePos.x = static_cast<float>(e.motion.x);
 			mousePos.y = static_cast<float>(e.motion.y);
+			EventManager::GetInstance().SendMessage(Event::MouseMove, EventArgs({ -1, (int)e.motion.x, (int)e.motion.y }));
 		}
 		if (e.type == SDL_MOUSEBUTTONDOWN) {
 			if (e.button.button == SDL_BUTTON_LEFT) {
 				mouseDown = true;
 				mouseHold = true;
+				EventManager::GetInstance().SendMessage(Event::MouseDown, EventArgs({ 0, (int)e.motion.x, (int)e.motion.y }));
 			}
 			if (e.button.button == SDL_BUTTON_RIGHT) {
 				mouse2Down = true;
 				mouse2Hold = true;
+				EventManager::GetInstance().SendMessage(Event::MouseDown, EventArgs({1, (int)e.motion.x, (int)e.motion.y }));
 			}
 
 		}
@@ -36,11 +42,17 @@ bool InputManager::ProcessInput()
 			if (e.button.button == SDL_BUTTON_LEFT) {
 				mouseHold = false;
 				mouseUp = true;
+				EventManager::GetInstance().SendMessage(Event::MouseUp, EventArgs({ 0, (int)e.motion.x, (int)e.motion.y }));
 			}
 			if (e.button.button == SDL_BUTTON_RIGHT) {
 				mouse2Hold = false;
 				mouse2Up = true;
+				EventManager::GetInstance().SendMessage(Event::MouseUp, EventArgs({ 1, (int)e.motion.x, (int)e.motion.y }));
 			}
+		}
+		if (e.type == SDL_MOUSEWHEEL) {
+			scrollDelta = e.wheel.preciseY;
+			//event
 		}
 		if (e.type == SDL_KEYDOWN) {
 			if (std::find(holdKeys.begin(), holdKeys.end(), e.key.keysym.sym) == holdKeys.end()) {
@@ -129,6 +141,19 @@ bool InputManager::MouseUp(int btn)
 	}
 	return false;
 }
+float InputManager::GetScrollDelta()
+{
+	return scrollDelta;
+}
+Vector2 InputManager::GetMousePos() {
+	return mousePos;
+}
+Vector2 InputManager::GetWorldMousePos() {
+	Vector2 halfPos{ -Camera::GetMainCamera().GetViewPort().width / 2.f , -Camera::GetMainCamera().GetViewPort().height / 2.f };
+	return (mousePos + Camera::GetMainCamera().gameObject->transform->GetPosition()) + halfPos;
+}
+
+
 void InputManager::RegisterCommand(Command* command) {
 	std::unique_ptr<Command> com = std::unique_ptr<Command>(command);
 	//command->Register(gameobject, key);

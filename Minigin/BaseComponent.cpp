@@ -2,13 +2,14 @@
 #include "GameObject.h" //...2 hrs... I AM GOING TO KILL SOMEONE!!!
 #include "Time.h"
 
-BaseComponent::BaseComponent(GameObject* objPtr, std::string type):
-    gameObject{ objPtr },
-    checkGO{objPtr},
-    classType{type}
+BaseComponent::BaseComponent():
+    gameObject{},
+    checkGO{},
+    classType{}
 {
     //Start();
 }
+
 BaseComponent::~BaseComponent() {
 }
 
@@ -27,4 +28,11 @@ void BaseComponent::CheckGO()
 {
     //assert(checkGO == gameObject);
     if (gameObject != checkGO) gameObject = checkGO;
+}
+
+void BaseComponent::Initialize(GameObject* objPtr, std::string type)
+{
+    gameObject = objPtr;
+    checkGO = objPtr;
+    classType = type;
 }

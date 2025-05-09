@@ -28,8 +28,14 @@ std::shared_ptr<Texture2D> ResourceManager::LoadTexture(const std::string& file)
 {
 	const auto fullPath = m_dataPath/file;
 	const auto filename = fs::path(fullPath).filename().string();
-	if(m_loadedTextures.find(filename) == m_loadedTextures.end())
-		m_loadedTextures.insert(std::pair(filename,std::make_shared<Texture2D>(fullPath.string())));
+	if (m_loadedTextures.find(filename) == m_loadedTextures.end()) {
+		Texture2D* tex = new Texture2D(fullPath.string());
+		if (tex->GetSDLTexture() == nullptr) {
+			delete tex;
+			return LoadTexture("Missing.png");
+		}
+		m_loadedTextures.insert(std::pair(filename, std::shared_ptr<Texture2D>(tex)));
+	}
 	return m_loadedTextures.at(filename);
 }
 
@@ -60,4 +66,17 @@ void ResourceManager::UnloadUnusedResources()
 		else
 			++it;
 	}
+}
+
+std::string ResourceManager::GetPath(const std::string str)
+{
+	const auto fullPath = m_dataPath / str;
+	const auto filename = fs::path(fullPath).filename().string();
+	return filename;
+}
+std::string ResourceManager::GetPath(const char* str)
+{
+	const auto fullPath = m_dataPath / str;
+	//const auto filename = fs::path(fullPath).filename().string();
+	return fullPath.string();
 }

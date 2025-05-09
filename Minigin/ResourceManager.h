@@ -15,6 +15,8 @@ public:
 	std::shared_ptr<Texture2D> LoadTexture(const std::string& file);
 	std::shared_ptr<Font> LoadFont(const std::string& file, uint8_t size);
 	void UnloadUnusedResources();
+	std::string GetPath(const std::string str);
+	std::string GetPath(const char* str);
 private:
 	friend class Singleton<ResourceManager>;
 	ResourceManager() = default;

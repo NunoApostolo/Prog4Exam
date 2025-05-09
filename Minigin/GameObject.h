@@ -9,23 +9,23 @@
 //#include "ColliderManager.h"
 #include <glm.hpp>
 //#include "Transform.h"
+#include <iostream>
+#include "IMouseHandler.h"
 
 class Transform;
 class Scene;
 class GameObject final
 {
+	friend class Scene;
 public:
 	std::string name;
-	bool enabled;
 	Transform* transform;
 
 	GameObject* parentPtr;
 	std::vector<GameObject*> childrenPtr; // framework won't be used much
 
 	static GameObject* Create(std::string name);
-	static void CreateObjects(Scene* curScene);
 	static bool Delete(GameObject* obj);
-	static void DeleteObjects(Scene* curScene);
 
 	GameObject(std::string name, const Vector3& pos, const Vector3& scale, float rotarion, GameObject* parent = nullptr); // just in case, different constructor behaviour
 	GameObject(std::string name);
@@ -46,14 +46,22 @@ public:
 
 	template <typename T> // dynamic? / not seperating template code from header. It's a pain otherwise.
 	T* AddComponent() {
+		static_assert(std::is_base_of<BaseComponent, T>::value, "Must be BaseComponent");
+
 		GameObject* ptr{ this };
-		T* comp = new T(ptr, typeid(T).name());
+		T* comp{ new T() };
+		dynamic_cast<BaseComponent*>(comp)->Initialize(ptr, typeid(T).name());
 		//T* comp{ new T(ptr, typeid(T).name()) };
 		//std::shared_ptr<T> comp(new T(ptr, typeid(T).name()));
 
 		components.emplace_back(std::move(std::unique_ptr<T>(comp)));
 		newComponents.emplace_back(comp);
 		comp->Awake();
+
+		if (dynamic_cast<IMouseHandler*>(comp)) {
+			dynamic_cast<IMouseHandler*>(comp)->Init(ptr);
+		}
+
 		return comp;
 	}
 	template <typename T>
@@ -118,17 +126,37 @@ public:
 	}
 	template <typename T>
 	void DeleteComponent() {
-		std::remove(components.begin(), components.end(),
-			std::find_if(components.begin(), components.end(), [&](std::unique_ptr<BaseComponent> comp) {return comp->GetType() == typeid(T).name(); }));
+		//int index{ 0 };
+		//for (auto& c : components) {
+		//	if (c.get)
+		//}
+		components.erase(std::find_if(components.begin(), components.end(), [&](const std::unique_ptr<BaseComponent>& comp) {
+			bool check{ comp->GetType() == typeid(T).name() };
+			if (check) {
+				EventManager::GetInstance().RemoveListener(comp.get()->gameObject);
+			}
+			return check; 
+			}));
 		
 	}
 
+	void SetActive(bool active);
+	bool IsActive() { return enabled; }
+	int GetOrder() { return order; }
+	void SetOrder(int renderOrder) { order = renderOrder; }
 private:
+	void SetInternActive(bool active);
+	bool GetActive();
+
 	std::vector<std::unique_ptr<BaseComponent>> components{};
 	std::vector<BaseComponent*> newComponents{};
+	bool enabled{ true };
+	bool localEnabled{ true };
 	bool prevEnabled{};
+	int order{ 0 };
+	bool deleted{ false };
 
-	static std::vector<GameObject*> objToCreate;
+	static std::vector<std::unique_ptr<GameObject>> objToCreate;
 	static std::vector<GameObject*> objToDelete;
 
 	//void Copy(GameObject other, bool parent = true);
@@ -143,6 +171,9 @@ private:
 	//	newComponents.emplace_back(comp);
 	//	return comp;
 	//}
+protected:
+	static void CreateObjects(Scene* curScene);
+	static void DeleteObjects(Scene* curScene);
 
 };
 
