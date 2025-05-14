@@ -62,9 +62,10 @@ void MapCreator::LoadMap(const std::string& path, const float& size)
 	std::vector<MapBlock*> blocks{};
 	for (auto& p : points) {
 		MapBlock* block = GameObject::Create("Block")->AddComponent<MapBlock>();
-		block->SetCollider(NODE_COUNT / size / 2);
+		//block->SetCollider(size / (NODE_COUNT+4) / 2);
 		block->gameObject->SetParent(mapObj);
 		block->gameObject->transform->localPosition = p;
+		block->SetCollider(size / (NODE_COUNT + 1) / 2);
 		blocks.emplace_back(block);
 	}
 

@@ -7,11 +7,11 @@
 #include "Bullet.h"
 
 enum class Direction {
-	None,
-	Right,
-	Up,
-	Left,
-	Down
+	None = 0,
+	Right = 1,
+	Up = 2,
+	Left = 3,
+	Down = 4
 };
 
 class Player : public BaseComponent, public IEventHandler
@@ -52,6 +52,7 @@ private:
 	int score{ 0 };
 	int lives{ 3 };
 	bool isDead{ false };
+	float texSize{};
 	std::unique_ptr<Subject> subject;
 	TextureRenderer* tex{}, * barrelTex{};
 

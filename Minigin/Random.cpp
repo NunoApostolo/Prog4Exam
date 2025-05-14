@@ -1,7 +1,7 @@
 #include "Random.h"
 #include <random>
 
-void Random::SetRandomSeet()
+void Random::SetRandomSeed()
 {
     std::srand(clock());
 }

@@ -72,3 +72,7 @@ inline const std::string operator+(std::string str, const Vector3& rhs) {
 	std::string strres{ str + "Vector3(" + std::to_string(rhs.x) + ", " + std::to_string(rhs.y) + ", " + std::to_string(rhs.z) + ")"};
 	return strres;
 }
+inline const std::string operator+(std::string str, int rhs) {
+	std::string strres{ str + std::to_string(rhs)};
+	return strres;
+}

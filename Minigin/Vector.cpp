@@ -72,5 +72,7 @@ float Vector3::AngleDeg(const Vector3& v1, const Vector3& v2) {
 	Vector3 base{ 100,0,0 };
 	Vector3 diff{ v2 - v1 };
 	float dot{ base.x*diff.x + base.y*diff.y + base.z*diff.z};
-	return std::acosf(dot / (Length(base) * Length(diff))) / static_cast<float>(M_PI) * 180.f;
+	float res = std::acosf(dot / (Length(base) * Length(diff))) / static_cast<float>(M_PI) * 180.f;
+	if (diff.y < 0) res += 180;
+	return res;
 }

@@ -19,9 +19,12 @@ void Player::Start()
 	tex = GameObject::Create("Tank Texture")->AddComponent<TextureRenderer>();
 	tex->gameObject->SetParent(gameObject);
 	tex->SetTexture("Player.png", Vector2(0.5f,0.5f), 5);
+	texSize = tex->GetSize().x/2;
 	barrelTex = GameObject::Create("Player Barrel")->AddComponent<TextureRenderer>();
 	barrelTex->gameObject->SetParent(gameObject);
 	barrelTex->SetTexture("TankBarrel.png", Vector2(0.2f, 0.5f), 6);
+
+	gameObject->transform->localScale = Vector2(1.3f,1.3f);
 
 	if (id == 0) 
 	{
@@ -131,7 +134,6 @@ void Player::Shoot()
 {
 	Bullet* bullet = GameObject::Create("Player Bullet")->AddComponent<Bullet>();
 	bullet->Init(gameObject->transform->GetPosition(), barrelTex->gameObject->transform->localRotation, "PlayerShell.png");
-
 }
 
 void Player::IncreaseScore(int scoreInc)
@@ -192,7 +194,7 @@ void PlayerMoveCommand::ExecutePressed()
 	if (player->dir != dir) return;
 	Vector3 prevPos = gameObj->transform->position;
 	gameObj->transform->position = (gameObj->transform->position + moveVec * Time::deltaTime);
-	if (GameManager::GetInstance().CheckColliders(gameObj->transform->GetPosition(), 32.f)) {
+	if (GameManager::GetInstance().CheckColliders(gameObj->transform->GetPosition(), player->texSize)) {
 		gameObj->transform->position = prevPos;
 	}
 }
