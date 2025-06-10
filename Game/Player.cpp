@@ -130,10 +130,21 @@ void Player::SetDirection(Direction direction)
 	}
 }
 
+bool Player::CheckCollision(const Vector3& pos, const float unitCol)
+{
+	Vector3 selfPos{ gameObject->transform->GetPosition() };
+	if (pos.x + unitCol >= selfPos.x - texSize && pos.x - unitCol <= selfPos.x + texSize
+		&& pos.y + unitCol >= selfPos.y - texSize && pos.y - unitCol <= selfPos.y + texSize) {
+		return true;
+	}
+	return false;
+}
+
 void Player::Shoot()
 {
 	Bullet* bullet = GameObject::Create("Player Bullet")->AddComponent<Bullet>();
 	bullet->Init(gameObject->transform->GetPosition(), barrelTex->gameObject->transform->localRotation, "PlayerShell.png");
+	bullet->SetOwner(this);
 }
 
 void Player::IncreaseScore(int scoreInc)

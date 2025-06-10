@@ -31,6 +31,8 @@ public:
 class ChaseState : public BaseEnemyState {
 public:
 	void Update() override;
+private:
+	float shootTimer{ 2.f };
 };
 
 class Enemy : public BaseComponent
@@ -45,9 +47,17 @@ public:
 	void CreatePath(const Vector3& dest);
 	void ClearPath();
 	int GetPathCount();
+
+	void Shoot();
+	void TakeDamage(int dmg, Player* player);
+
+	bool CheckCollision(const Vector3& pos, const float unitCol);
 private:
-	BaseEnemyState* curState;
-	TextureRenderer* tankTex;
+	BaseEnemyState* curState{ nullptr };
+	TextureRenderer* tankTex{ nullptr };
+	float texSize{};
+
+	int hp{ 3 };
 
 	Direction dir{Direction::None};
 	std::vector<Vector3> path{};

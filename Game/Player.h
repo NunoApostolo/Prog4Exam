@@ -27,6 +27,7 @@ public:
 	void TurnBarrelLeft();
 	void TurnBarrelRight();
 	void SetDirection(Direction direction);
+	bool CheckCollision(const Vector3& pos, const float unitCol);
 
 	void Shoot();
 

@@ -33,6 +33,18 @@ void ChaseState::Update()
 	if (owner->GetPathCount() <= 1) {
 		owner->CreatePath(GameManager::GetInstance().GetPlayerPos());
 	}
+
+	if (shootTimer > 0) {
+		shootTimer -= Time::deltaTime;
+	}
+	else {
+		if (Vector3().AngleDeg(GameManager::GetInstance().GetPlayerPos(), owner->gameObject->transform->GetPosition())
+			- owner->gameObject->transform->localRotation <= 30.f) {
+			owner->Shoot();
+			shootTimer = 2.f;
+		}
+	}
+
 	if (Vector3::Distance(owner->gameObject->transform->position, GameManager::GetInstance().GetPlayerPos()) > 400) {
 		owner->SetState(idle.get());
 	}
@@ -47,6 +59,7 @@ void Enemy::Start()
 	tankTex->SetTexture("Tank.png", Vector2(0.5f, 0.5f), 5);
 	tankTex->gameObject->SetParent(gameObject);
 	tankTex->gameObject->transform->localPosition = Vector2();
+	texSize = tankTex->GetSize().x / 2;
 }
 
 void Enemy::Update()
@@ -107,6 +120,7 @@ void Enemy::SetState(BaseEnemyState* state)
 void Enemy::CreatePath(const Vector3& dest)
 {
 	ClearPath();
+	if (dest == gameObject->transform->GetPosition()) return;
 
 	int x{}, y{};
 	GameManager::GetInstance().GetGridPos(dest, x, y);
@@ -223,12 +237,12 @@ void Enemy::CreatePath(const Vector3& dest)
 		if (path.size() != 0) {
 			if (path[path.size() - 1] == gridDest) {
 
-				for (auto& p : path) {
-					TextureRenderer* testT = GameObject::Create("test")->AddComponent<TextureRenderer>();
-					testT->gameObject->transform->position = p;
-					testT->gameObject->transform->localScale = Vector2(0.1f,0.1f);
-					testT->SetTexture("", Vector2(0.5f, 0.5f), 1000);
-				}
+				//for (auto& p : path) {
+				//	TextureRenderer* testT = GameObject::Create("test")->AddComponent<TextureRenderer>();
+				//	testT->gameObject->transform->position = p;
+				//	testT->gameObject->transform->localScale = Vector2(0.1f,0.1f);
+				//	testT->SetTexture("", Vector2(0.5f, 0.5f), 1000);
+				//}
 
 				break;
 			}
@@ -247,6 +261,35 @@ void Enemy::ClearPath()
 int Enemy::GetPathCount()
 {
 	return static_cast<int>(path.size());
+}
+
+void Enemy::Shoot()
+{
+	Bullet* bullet = GameObject::Create("Enemy Bullet")->AddComponent<Bullet>();
+	bullet->Init(gameObject->transform->GetPosition(), tankTex->gameObject->transform->localRotation, "EnemyShell.png");
+	bullet->SetOwner(this);
+}
+
+void Enemy::TakeDamage(int dmg, Player* player)
+{
+	player;
+	hp -= dmg;
+
+	if (hp <= 0) {
+		GameManager::GetInstance().NotifyEnemyDeath(this);
+
+		GameObject::Delete(gameObject);
+	}
+}
+
+bool Enemy::CheckCollision(const Vector3& pos, const float unitCol)
+{
+	Vector3 selfPos{ gameObject->transform->GetPosition() };
+	if (pos.x + unitCol >= selfPos.x - texSize && pos.x - unitCol <= selfPos.x + texSize
+		&& pos.y + unitCol >= selfPos.y - texSize && pos.y - unitCol <= selfPos.y + texSize) {
+		return true;
+	}
+	return false;
 }
 
 void BaseEnemyState::SetEnemy(Enemy* enemy)

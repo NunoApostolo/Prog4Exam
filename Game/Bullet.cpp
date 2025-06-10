@@ -14,6 +14,8 @@ void Bullet::Init(const Vector3& pos, const float rotation, const std::string& t
 
 	gameObject->transform->position += dir * 5;
 
+	gameObject->transform->localRotation = rotation;
+
 }
 
 void Bullet::Update()
@@ -21,12 +23,33 @@ void Bullet::Update()
 	CollisionDirection colDir{};
 	Vector3 nextpos = gameObject->transform->position + dir * (SPEED * Time::deltaTime);
 
+	if (plOwner != nullptr) {
+		Enemy* enemy{ GameManager::GetInstance().CheckEnemyColliders(nextpos, bulletSize) };
+		if (enemy != nullptr) {
+			enemy->TakeDamage(dmg, plOwner);
+			//
+			GameObject::Delete(gameObject);
+			return;
+		}
+	}
+	else {
+		Player* player{ GameManager::GetInstance().CheckPlayerColliders(nextpos, bulletSize) };
+		if (player != nullptr) {
+			player->TakeDamage(dmg);
+			//
+			GameObject::Delete(gameObject);
+			return;
+		}
+	}
+
 	if (GameManager::GetInstance().CheckColliders(nextpos, bulletSize, colDir)) {
 		if (colDir == CollisionDirection::Right || colDir == CollisionDirection::Left) {
 			dir.x = dir.x * -1;
+			gameObject->transform->localRotation += 180;
 		}
 		else {
 			dir.y = dir.y * -1;
+			gameObject->transform->localRotation += 180;
 		}
 		++bounceCount;
 	}
@@ -40,4 +63,14 @@ void Bullet::Update()
 	}
 
 	if (bounceCount >= 3) GameObject::Delete(gameObject);
+}
+
+void Bullet::SetOwner(Player* player)
+{
+	plOwner = player;
+}
+
+void Bullet::SetOwner(Enemy* enemy)
+{
+	enOwner = enemy;
 }

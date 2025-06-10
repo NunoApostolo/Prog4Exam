@@ -22,7 +22,7 @@ public:
 	Vector3 operator/(const Vector3& rhs);
 	const Vector3 operator/(const Vector3& rhs) const;
 	Vector3& operator+=(const Vector3& rhs);
-	bool operator==(const Vector3& rhs);
+	bool operator==(const Vector3& rhs) const;
 	bool operator!=(const Vector3& rhs);
 	Vector3 Normalize() const;
 	static float Length(const Vector3& v);

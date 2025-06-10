@@ -31,6 +31,7 @@ void GameManager::Init()
 	Enemy* testEnemy = GameObject::Create("test")->AddComponent<Enemy>();
 	testEnemy->gameObject->transform->position = Vector2(-mapSize / 2, (-mapSize + TOP_OFFSET) / 2) + 
 		Vector2(mapSize / GRID_SIZE * 17, mapSize / GRID_SIZE * 1);
+	enemies.emplace_back(testEnemy);
 }
 
 void GameManager::Update()
@@ -123,5 +124,24 @@ bool GameManager::CheckColliders(const Vector3& pos, const float unitCol, Collis
 		if (b->CheckCollision(pos, unitCol, dir)) return true;
 	}
 	return false;
+}
+
+Player* GameManager::CheckPlayerColliders(const Vector3& pos, const float unitCol)
+{
+	if (player->CheckCollision(pos, unitCol)) return player;
+	return nullptr;
+}
+
+Enemy* GameManager::CheckEnemyColliders(const Vector3& pos, const float unitCol)
+{
+	for (auto& e : enemies) {
+		if (e->CheckCollision(pos, unitCol)) return e;
+	}
+	return nullptr;
+}
+
+void GameManager::NotifyEnemyDeath(Enemy* en)
+{
+	enemies.erase(std::find(enemies.begin(), enemies.end(), en));
 }
 

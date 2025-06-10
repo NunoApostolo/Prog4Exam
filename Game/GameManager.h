@@ -27,10 +27,15 @@ public:
 	void ClearColliders();
 	bool CheckColliders(const Vector3& pos, const float unitCol);
 	bool CheckColliders(const Vector3& pos, const float unitCol, CollisionDirection& dir);
+	Player* CheckPlayerColliders(const Vector3& pos, const float unitCol);
+	Enemy* CheckEnemyColliders(const Vector3& pos, const float unitCol);
+
+	void NotifyEnemyDeath(Enemy* en);
 
 private:
 	Vector3 GetPosInGridInternal(int x, int y);
 	Player* player{};
+	std::vector<Enemy*> enemies{};
 	std::vector<MapBlock*> blocks{};
 	MapCreator mapCreator{};
 	float mapSize{};
