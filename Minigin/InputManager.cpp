@@ -9,6 +9,22 @@
 
 bool InputManager::ProcessInput()
 {
+	for (auto& c : commandsNext) {
+		commands.emplace_back(std::move(c));
+	}
+	commandsNext.clear();
+
+	for (auto& c : commands) {
+		if (!c.get()->GetObj()->IsDeleted()) {
+			commandsNew.emplace_back(std::move(c));
+		}
+	}
+	commands.clear();
+	for (auto& c : commandsNew) {
+		commands.emplace_back(std::move(c));
+	}
+	commandsNew.clear();
+
 	SDL_Event e;
 	keyDown = 0;
 	keyUp = 0;
@@ -89,7 +105,10 @@ bool InputManager::ProcessInput()
 	XInput::GetInstance().ProcessInput();
 
 	for (auto& command : commands) {
-		if (command->isGamePad) XInput::GetInstance().ProcessCommand(command.get());
+		if (command->isGamePad) {
+			XInput::GetInstance().ProcessCommand(command.get());
+			continue;
+		}
 		if (KeyPressed(command->GetKey())) {
 			command->ExecutePressed();
 		}
@@ -157,5 +176,5 @@ Vector2 InputManager::GetWorldMousePos() {
 void InputManager::RegisterCommand(Command* command) {
 	std::unique_ptr<Command> com = std::unique_ptr<Command>(command);
 	//command->Register(gameobject, key);
-	commands.emplace_back(std::move(com));
+	commandsNext.emplace_back(std::move(com));
 }

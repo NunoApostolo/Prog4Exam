@@ -22,3 +22,8 @@ unsigned long Command::GetBtn()
 {
     return btn;
 }
+
+GameObject* Command::GetObj()
+{
+    return gameObj;
+}

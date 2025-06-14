@@ -16,23 +16,31 @@
 #include <Xinput.h>
 #include <windows.h>
 #pragma comment(lib, "XInput.lib")
-#define XUSER_MAX 1 // uhh
+#define XUSER_MAX 2 // uhh
+#include "Console.h"
 
 class XInput::XInputImpl {
 	XINPUT_STATE state; // 4
 	XINPUT_STATE prevState;
+
+    std::vector<XINPUT_STATE> states{ std::vector<XINPUT_STATE>(XUSER_MAX) };
+    std::vector<XINPUT_STATE> prevStates{ std::vector<XINPUT_STATE> (XUSER_MAX)};
+
+    int userCount{ 0 };
 public:
     void ProcessInput() {
+        userCount = 0;
         DWORD dwResult;
         for (DWORD i = 0; i < XUSER_MAX; i++)
         {
-            CopyMemory(&prevState, &state, sizeof(XINPUT_STATE));
+            CopyMemory(&prevStates[i], &states[i], sizeof(XINPUT_STATE));
             ZeroMemory(&state, sizeof(XINPUT_STATE));
             dwResult = XInputGetState(i, &state);
 
             if (dwResult == ERROR_SUCCESS)
             {
-                // only supports one controller...
+                userCount++;
+                states[i] = state;
             }
             else
             {
@@ -41,15 +49,42 @@ public:
         }
     }
     void ProcessCommand(Command* command) {
-        if ((state.Gamepad.wButtons ^ prevState.Gamepad.wButtons) & command->GetBtn() && state.Gamepad.wButtons & command->GetBtn()) {
-            command->ExecuteDown();
+        for (int idx{ 0 }; idx < states.size(); ++idx) {
+            if (command->GetUser() != idx) continue;
+            if ((states[idx].Gamepad.wButtons ^ prevStates[idx].Gamepad.wButtons) & command->GetBtn() && states[idx].Gamepad.wButtons & command->GetBtn()) {
+                command->ExecuteDown();
+            }
+            if (states[idx].Gamepad.wButtons & command->GetBtn()) {
+                command->ExecutePressed();
+            }
+            if ((states[idx].Gamepad.wButtons ^ prevStates[idx].Gamepad.wButtons) & command->GetBtn() && prevStates[idx].Gamepad.wButtons & command->GetBtn()) {
+                command->ExecuteUp();
+            }
+            if (command->GetBtn() & static_cast<unsigned long>(GamePad::Left_Trigger) && states[idx].Gamepad.bLeftTrigger >= XINPUT_GAMEPAD_TRIGGER_THRESHOLD
+                && prevStates[idx].Gamepad.bLeftTrigger < XINPUT_GAMEPAD_TRIGGER_THRESHOLD) {
+                command->ExecuteDown();
+            }
+            if (command->GetBtn() & static_cast<unsigned long>(GamePad::Right_Trigger) && states[idx].Gamepad.bRightTrigger >= XINPUT_GAMEPAD_TRIGGER_THRESHOLD
+                && prevStates[idx].Gamepad.bRightTrigger < XINPUT_GAMEPAD_TRIGGER_THRESHOLD) {
+                command->ExecuteDown();
+            }
+
+            const float MAX{ 32767.f };
+
+            Vector2 pos = Vector2(states[idx].Gamepad.sThumbLX, states[idx].Gamepad.sThumbLY);
+            pos.Normalize();
+            pos.y = pos.y * -1;
+            if (Vector2().Length(pos) >= 0.7f) {
+                command->MoveLThumb(pos);
+            }
+            pos = Vector2(states[idx].Gamepad.sThumbRX / MAX, states[idx].Gamepad.sThumbRY / MAX);
+            pos.Normalize();
+            pos.y = pos.y * -1;
+            if (Vector2().Length(pos) >= 0.7f) {
+                command->MoveRThumb(pos);
+            }
         }
-        if (state.Gamepad.wButtons & command->GetBtn()) {
-            command->ExecutePressed();
-        }
-        if ((state.Gamepad.wButtons ^ prevState.Gamepad.wButtons) & command->GetBtn() && prevState.Gamepad.wButtons & command->GetBtn()) {
-            command->ExecuteUp();
-        }
+
     }
 };
 XInput::XInput()

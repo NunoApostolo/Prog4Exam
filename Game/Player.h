@@ -23,9 +23,12 @@ public:
 	void Update() override;
 
 	void Init(int id, int health = 1, int lives = 3);
+	~Player();
+	void Spawn();
 
 	void TurnBarrelLeft();
 	void TurnBarrelRight();
+	void SetBarrelDir(const Vector2& barrelDir);
 	void SetDirection(Direction direction);
 	bool CheckCollision(const Vector3& pos, const float unitCol);
 
@@ -36,6 +39,7 @@ public:
 	void Die();
 
 	int GetHealth() { return health;}
+	bool IsDead() { return isDead; }
 	int GetLives() { return lives;}
 	int GetScore() { return score; }
 	int GetId() { return id; }
@@ -49,13 +53,14 @@ private:
 
 	int id{ 0 };
 	int health{ 1 };
-	float speed{ 100 };
+	float speed{ 120 };
 	int score{ 0 };
 	int lives{ 3 };
 	bool isDead{ false };
 	float texSize{};
 	std::unique_ptr<Subject> subject;
 	TextureRenderer* tex{}, * barrelTex{};
+	GameObject* ui{};
 
 };
 class PlayerMoveCommand : public Command
@@ -74,25 +79,6 @@ private:
 	Direction dir{};
 };
 
-class ScoreCommand : public Command {
-public:
-	ScoreCommand(GameObject* gameobject, GamePad btn, int score) :
-		Command(gameobject, btn), score{ score } 
-	{
-		player = gameobject->GetComponent<Player>();
-	}
-	ScoreCommand(GameObject* gameobject, SDL_Keycode keyCode, int score):
-		Command(gameobject, keyCode), score{ score }
-	{
-		player = gameobject->GetComponent<Player>();
-	}
-
-	void ExecuteDown() override;
-
-private:
-	int score;
-	Player* player{};
-};
 class ShootCommand : public Command {
 public:
 	ShootCommand(GameObject* gameobject, GamePad btn, int dmg) :
@@ -110,5 +96,25 @@ public:
 
 private:
 	int dmg;
+	Player* player{};
+};
+class BarrelCommand : public Command {
+public:
+	BarrelCommand(GameObject* gameobject, GamePad btn, bool isLeft) :
+		Command(gameobject, btn), isLeft{ isLeft }
+	{
+		player = gameobject->GetComponent<Player>();
+	}
+	BarrelCommand(GameObject* gameobject, SDL_Keycode keyCode, bool isLeft) :
+		Command(gameobject, keyCode), isLeft{ isLeft }
+	{
+		player = gameobject->GetComponent<Player>();
+	}
+
+	void ExecutePressed() override;
+	void MoveRThumb(const Vector2& thumb) override;
+
+private:
+	bool isLeft;
 	Player* player{};
 };

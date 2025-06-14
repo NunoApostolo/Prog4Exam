@@ -7,6 +7,7 @@ class EventManager : public Singleton<EventManager>
 {
 public:
 	void SendMessage(Event e, EventArgs eArgs = EventArgs());
+
 	template <typename T>
 	void SendMessage(T e, EventArgs eArgs = EventArgs())
 	{
@@ -16,6 +17,7 @@ public:
 
 	void AddListener(GameObject* obj, IEventHandler* handler, Event eventIDs);
 	void AddListener(GameObject* obj, IEventHandler* handler, std::vector<Event> eventIDs);
+
 	template <typename T>
 	void AddListener(GameObject* obj, IEventHandler* handler, T eventIDs)
 	{

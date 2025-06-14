@@ -144,6 +144,7 @@ public:
 	bool IsActive() { return enabled; }
 	int GetOrder() { return order; }
 	void SetOrder(int renderOrder) { order = renderOrder; }
+	bool IsDeleted() { return deleted; }
 private:
 	void SetInternActive(bool active);
 	bool GetActive();
@@ -174,6 +175,7 @@ private:
 protected:
 	static void CreateObjects(Scene* curScene);
 	static void DeleteObjects(Scene* curScene);
+
 
 };
 

@@ -3,6 +3,7 @@
 #include <math.h>
 #include "GameManager.h"
 #include "Console.h"
+#include "ServiceLocator.h"
 
 void Bullet::Init(const Vector3& pos, const float rotation, const std::string& texStr)
 {
@@ -16,6 +17,8 @@ void Bullet::Init(const Vector3& pos, const float rotation, const std::string& t
 
 	gameObject->transform->localRotation = rotation;
 
+	GameManager::GetInstance().RegisterBullet(this);
+	ServiceLocator::GetAudioService().PlayAudio("shoot.mp3", 0.5f);
 }
 
 void Bullet::Update()
@@ -24,25 +27,44 @@ void Bullet::Update()
 	Vector3 nextpos = gameObject->transform->position + dir * (SPEED * Time::deltaTime);
 
 	if (plOwner != nullptr) {
-		Enemy* enemy{ GameManager::GetInstance().CheckEnemyColliders(nextpos, bulletSize) };
-		if (enemy != nullptr) {
-			enemy->TakeDamage(dmg, plOwner);
-			//
-			GameObject::Delete(gameObject);
-			return;
+		if (GameManager::GetInstance().GetMode() == GameMode::Versus) {
+			Player* pl{ GameManager::GetInstance().CheckPlayerColliders(nextpos, bulletSize) };
+			if (pl != nullptr && pl != plOwner) {
+				ServiceLocator::GetAudioService().PlayAudio("hit.mp3", 0.5f);
+				GameManager::GetInstance().RemoveBullet(this);
+				GameObject::Delete(gameObject);
+
+				pl->TakeDamage(dmg);
+			}
 		}
+		else {
+			Enemy* enemy{ GameManager::GetInstance().CheckEnemyColliders(nextpos, bulletSize) };
+			if (enemy != nullptr) {
+				ServiceLocator::GetAudioService().PlayAudio("hit.mp3", 0.5f);
+				GameManager::GetInstance().RemoveBullet(this);
+				GameObject::Delete(gameObject);
+
+				enemy->TakeDamage(dmg, plOwner);
+				return;
+			}
+		}
+
 	}
 	else {
 		Player* player{ GameManager::GetInstance().CheckPlayerColliders(nextpos, bulletSize) };
 		if (player != nullptr) {
-			player->TakeDamage(dmg);
 			//
+			ServiceLocator::GetAudioService().PlayAudio("hit.mp3", 0.5f);
+			GameManager::GetInstance().RemoveBullet(this);
 			GameObject::Delete(gameObject);
+
+			player->TakeDamage(dmg);
 			return;
 		}
 	}
 
 	if (GameManager::GetInstance().CheckColliders(nextpos, bulletSize, colDir)) {
+		ServiceLocator::GetAudioService().PlayAudio("hit.mp3", 0.5f);
 		if (colDir == CollisionDirection::Right || colDir == CollisionDirection::Left) {
 			dir.x = dir.x * -1;
 			gameObject->transform->localRotation += 180;
@@ -62,7 +84,11 @@ void Bullet::Update()
 		gameObject->transform->position = prevPos + dir * (SPEED * Time::deltaTime);
 	}
 
-	if (bounceCount >= 3) GameObject::Delete(gameObject);
+	if (bounceCount >= 5)
+	{
+		GameObject::Delete(gameObject);
+		GameManager::GetInstance().RemoveBullet(this);
+	}
 }
 
 void Bullet::SetOwner(Player* player)

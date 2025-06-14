@@ -4,48 +4,51 @@
 #include "utils.h"
 #include "Console.h"
 #include "Random.h"
+#include "ServiceLocator.h"
 
 std::unique_ptr<IdleState> BaseEnemyState::idle{ std::unique_ptr<IdleState>(new IdleState())};
 std::unique_ptr<WanderState> BaseEnemyState::wandering{ std::unique_ptr<WanderState>(new WanderState())};
 std::unique_ptr<ChaseState> BaseEnemyState::chasing{ std::unique_ptr<ChaseState>(new ChaseState())};
 
-void IdleState::Update()
+void IdleState::Update(Enemy* owner)
 {
 	owner->CreatePath(GameManager::GetInstance().GetRandomPos());
 	owner->SetState(wandering.get());
 }
 
-void WanderState::Update()
+void WanderState::Update(Enemy* owner)
 {
 	owner->UpdateMovePath();
 	if (owner->GetPathCount() == 0) {
 		owner->SetState(idle.get());
 	}
-	if (Vector3::Distance(owner->gameObject->transform->position, GameManager::GetInstance().GetPlayerPos()) <= 200) {
+	if (Vector3::Distance(owner->gameObject->transform->position, GameManager::GetInstance().GetPlayerPos(owner->gameObject->transform->GetPosition())) <= 200) {
 		owner->ClearPath();
 		owner->SetState(chasing.get());
 	}
 }
 
-void ChaseState::Update()
+void ChaseState::Update(Enemy* owner)
 {
 	owner->UpdateMovePath();
 	if (owner->GetPathCount() <= 1) {
-		owner->CreatePath(GameManager::GetInstance().GetPlayerPos());
+		owner->CreatePath(GameManager::GetInstance().GetPlayerPos(owner->gameObject->transform->GetPosition()));
 	}
 
 	if (shootTimer > 0) {
 		shootTimer -= Time::deltaTime;
 	}
 	else {
-		if (Vector3().AngleDeg(GameManager::GetInstance().GetPlayerPos(), owner->gameObject->transform->GetPosition())
-			- owner->gameObject->transform->localRotation <= 30.f) {
-			owner->Shoot();
-			shootTimer = 2.f;
-		}
+		owner->Shoot();
+		shootTimer = 2.f;
 	}
 
-	if (Vector3::Distance(owner->gameObject->transform->position, GameManager::GetInstance().GetPlayerPos()) > 400) {
+	Player* pl = GameManager::GetInstance().CheckPlayerColliders(owner->gameObject->transform->position, owner->tankTex->GetSize().x / 2);
+	if (pl != nullptr) {
+		pl->TakeDamage(3);
+	}
+
+	if (Vector3::Distance(owner->gameObject->transform->position, GameManager::GetInstance().GetPlayerPos(owner->gameObject->transform->GetPosition())) > 400) {
 		owner->SetState(idle.get());
 	}
 }
@@ -60,25 +63,33 @@ void Enemy::Start()
 	tankTex->gameObject->SetParent(gameObject);
 	tankTex->gameObject->transform->localPosition = Vector2();
 	texSize = tankTex->GetSize().x / 2;
+
+	Init();
 }
 
 void Enemy::Update()
 {
-	curState->Update();
-
+	curState->Update(this);
 }
 
 void Enemy::UpdateMovePath()
 {
 	if (path.size() != 0) {
 		Vector3 moveDir{ (path[0] - gameObject->transform->position).Normalize()};
-		gameObject->transform->position += moveDir * SPEED * Time::deltaTime;
+		gameObject->transform->position += moveDir * speed * Time::deltaTime;
 
 		if (Vector3().Distance(path[0], gameObject->transform->GetPosition()) <= 2) {
 			gameObject->transform->position = path[0];
 			path.erase(path.begin());
 
 			SetDirection();
+		}
+
+		if (GameManager::GetInstance().CheckColliders(gameObject->transform->position, tankTex->GetSize().x / 2)) {
+			path.clear();
+			int x{}, y{};
+			GameManager::GetInstance().GetGridPos(gameObject->transform->position,x,y);
+			gameObject->transform->position = GameManager::GetInstance().GetPosInGrid(x, y);
 		}
 	}
 }
@@ -114,7 +125,6 @@ void Enemy::SetDirection()
 void Enemy::SetState(BaseEnemyState* state)
 {
 	curState = state;
-	curState->SetEnemy(this);
 }
 
 void Enemy::CreatePath(const Vector3& dest)
@@ -126,8 +136,8 @@ void Enemy::CreatePath(const Vector3& dest)
 	GameManager::GetInstance().GetGridPos(dest, x, y);
 	Vector3 gridDest = GameManager::GetInstance().GetPosInGrid(x, y);
 
-	Console::GetInstance().Log("destination: " + gridDest);
-	Console::GetInstance().Log("destination(x,y): " + std::to_string(x) + " " + std::to_string(y));
+	//Console::GetInstance().Log("destination: " + gridDest);
+	//Console::GetInstance().Log("destination(x,y): " + std::to_string(x) + " " + std::to_string(y));
 
 	Vector3 peekPos{ gameObject->transform->position };
 	Vector3 diff{ gridDest - peekPos };
@@ -205,7 +215,9 @@ void Enemy::CreatePath(const Vector3& dest)
 			if (helpCounter >= 100) {
 				peekDir = static_cast<Direction>(Random::GetRandom(1, 4));
 				prevDir = peekDir;
-				helpCounter = 0;
+				//helpCounter = 0;
+				CreatePath(GameManager::GetInstance().GetRandomPos());
+				return;
 			}
 		}
 		else {
@@ -219,7 +231,7 @@ void Enemy::CreatePath(const Vector3& dest)
 
 		if (prevDir != peekDir || peekPos == gridDest) {
 			GameManager::GetInstance().GetGridPos(peekPos, x, y);
-			Console::GetInstance().Log("(x,y)" + std::to_string(x) + " " + std::to_string(y));
+			//Console::GetInstance().Log("(x,y)" + std::to_string(x) + " " + std::to_string(y));
 
 			if (std::find(path.begin(), path.end(), peekPos) != path.end()) {
 				//peekDir = utils::OffsetEnum<Direction>(peekDir, Direction::Down, Direction::None, 1);
@@ -263,7 +275,12 @@ int Enemy::GetPathCount()
 	return static_cast<int>(path.size());
 }
 
-void Enemy::Shoot()
+void TankEnemy::Init()
+{
+	tankTex->SetTexture("Tank.png");
+}
+
+void TankEnemy::Shoot()
 {
 	Bullet* bullet = GameObject::Create("Enemy Bullet")->AddComponent<Bullet>();
 	bullet->Init(gameObject->transform->GetPosition(), tankTex->gameObject->transform->localRotation, "EnemyShell.png");
@@ -276,6 +293,9 @@ void Enemy::TakeDamage(int dmg, Player* player)
 	hp -= dmg;
 
 	if (hp <= 0) {
+		ServiceLocator::GetAudioService().PlayAudio("explosion.wav", 0.5f);
+		player->IncreaseScore(100);
+
 		GameManager::GetInstance().NotifyEnemyDeath(this);
 
 		GameObject::Delete(gameObject);
@@ -292,7 +312,8 @@ bool Enemy::CheckCollision(const Vector3& pos, const float unitCol)
 	return false;
 }
 
-void BaseEnemyState::SetEnemy(Enemy* enemy)
+void MeleeEnemy::Init()
 {
-	owner = enemy;
+	tankTex->SetTexture("Recognizer.png");
+	speed = 150;
 }

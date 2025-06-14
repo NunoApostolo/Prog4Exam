@@ -40,7 +40,6 @@ public:
 	virtual void OnDisable() {};
 	virtual void OnEnable() {};
 
-	//this is all unsused
 	template <class T, typename funcPtr>
 	void RegisterFunction(std::string name, T* obj, funcPtr func) {
 		//std::function<void()> f = func;
@@ -61,6 +60,6 @@ protected:
 	void Initialize(GameObject* objPtr, std::string type);
 
 private:
-	GameObject* checkGO{}; // to check if gameobject changed
+	GameObject* checkGO{};
 };
 

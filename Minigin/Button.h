@@ -8,7 +8,7 @@ public:
 	void Awake() override;
 	void Start() override;
 
-	std::function<void()> onMouseClick;
+	std::function<void()> onMouseClick{ nullptr };
 
 	std::shared_ptr<Texture2D> clickTex;
 	std::shared_ptr<Texture2D> enterTex;

@@ -41,8 +41,11 @@ public:
 
 	void SetText(std::string text, std::shared_ptr<Font> font, int order = 0, TextAllingmentType allignType = TextAllingmentType::Center, SDL_Color col = SDL_Color(255, 255, 255, 255));
 	void SetOrder(int renderOrder);
+	void SetOrderChildren(int offset);
 	void SetColor(SDL_Color col);
 	void SetBounds(const Vector2& bound);
+	void SetFontSize(uint8_t size);
+	void SetAllingment(TextAllingmentType allignType);
 
 	SDL_Color& GetColor();
 	Vector2 GetSize() const;

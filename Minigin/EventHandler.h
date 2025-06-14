@@ -13,6 +13,7 @@ public:
 
 	bool HasEventID(Event e);
 	bool HasEventID(uint16_t e);
+	//bool HasEventID(Event e) { return std::find(eventIDs.begin(), eventIDs.end(), e) != eventIDs.end(); }
 	GameObject* GetObj() { return obj; }
 
 private:

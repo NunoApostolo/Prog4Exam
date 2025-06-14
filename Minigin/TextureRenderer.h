@@ -14,7 +14,8 @@ public:
 	void SetTexture(const std::string path, Vector2 pivot, int renderOrder = 0, Vector2 size = Vector2(-1, -1));
 	void SetPivot(Vector2 pivot);
 	void SetOrder(int renderOrder);
-	void SetSize(const Vector2& newSize) { size = newSize; }
+	void SetOrderChildren(int offset);
+	void SetSize(const Vector2& newSize);
 	void SetColor(SDL_Color color) { col = color; }
 	//int GetOrder() { return order; }
 	Vector2 GetPivot() { return pivot; }

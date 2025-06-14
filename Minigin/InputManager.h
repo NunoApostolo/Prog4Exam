@@ -24,6 +24,8 @@ private:
 	SDL_Keycode keyUp{};
 
 	std::vector<std::unique_ptr<Command>> commands;
+	std::vector<std::unique_ptr<Command>> commandsNew;
+	std::vector<std::unique_ptr<Command>> commandsNext;
 	std::vector<SDL_Keycode> holdKeys;
 	Vector2 mousePos{};
 	bool mouseDown{false};

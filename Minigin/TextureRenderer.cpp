@@ -3,6 +3,7 @@
 #include "SceneManager.h"
 #include "Scene.h"
 #include <iostream>
+#include "TextObject.h"
 
 void TextureRenderer::SetTexture(std::shared_ptr<Texture2D> tex)
 {
@@ -59,10 +60,35 @@ void TextureRenderer::SetOrder(int renderOrder)
 	gameObject->SetOrder(renderOrder);
 	SceneManager::GetInstance().curScene->SetOrderFlag();
 }
+void TextureRenderer::SetOrderChildren(int offset)
+{
+	gameObject->SetOrder(gameObject->GetOrder() + offset);
+
+	for (auto& c : gameObject->childrenPtr) {
+		TextureRenderer* t = c->GetComponent<TextureRenderer>();
+		if (t != nullptr) {
+			t->SetOrderChildren(offset);
+		}
+		TextObject* text = c->GetComponent<TextObject>();
+		if (text != nullptr) {
+			text->SetOrderChildren(offset);
+		}
+	}
+
+	SceneManager::GetInstance().curScene->SetOrderFlag();
+
+}
+void TextureRenderer::SetSize(const Vector2& newSize)
+{
+	size = newSize;
+}
 Vector2 TextureRenderer::GetSize()
 {
 	if (size.x == -1 || size.y == -1) {
-		if (texture.get() == nullptr) Update();
+		if (texture.get() == nullptr) {
+
+			return size;
+		}
 		int w, h;
 		SDL_QueryTexture(texture->GetSDLTexture(), nullptr, nullptr, &w, &h);
 		size = Vector2((float)w, (float)h);

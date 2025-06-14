@@ -44,13 +44,14 @@ bool GameObject::Delete(GameObject* obj)
 				//obj->SetParent(nullptr);
 			}
 		}
-		else {
+		else if (std::find_if(objToCreate.begin(), objToCreate.end(), [obj](std::unique_ptr<GameObject>& o) {return o.get() == obj; }) != objToCreate.end()) {
 			obj->deleted = true;
 			obj->SetParent(nullptr);
 			for (auto& child : obj->childrenPtr) {
 				Delete(child);
 				//objToDelete.emplace_back(child);
 			}
+			//objToDelete.emplace_back(obj);
 			objToCreate.erase(std::find_if(objToCreate.begin(), objToCreate.end(), [obj](std::unique_ptr<GameObject>& o) {return o.get() == obj; }));
 		}
 		return true;
@@ -67,6 +68,12 @@ void GameObject::DeleteObjects(Scene* curScene)
 		curScene->Remove(obj);
 	}
 	objToDelete.clear();
+
+	//auto iter = std::find_if(objToCreate.begin(), objToCreate.end(), [&](std::unique_ptr<GameObject>& o) {return o.get()->IsDeleted(); });
+	//while (iter != objToCreate.end()) {
+	//	objToCreate.erase(iter);
+	//	iter = std::find_if(objToCreate.begin(), objToCreate.end(), [&](std::unique_ptr<GameObject>& o) {return o.get()->IsDeleted(); });
+	//}
 }
 
 GameObject::GameObject(std::string name, const Vector3& pos, const Vector3& scale, float rotation, GameObject* parent):
@@ -219,7 +226,7 @@ void GameObject::SetInternActive(bool active)
 	if (!active || !localEnabled) {
 		enabled = false;
 		for (auto& child : childrenPtr) {
-			child->SetInternActive(enabled);
+			child->SetInternActive(false);
 		}
 		return;
 	}

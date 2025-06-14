@@ -11,7 +11,7 @@ void Button::Awake()
 
 void Button::Start()
 {
-	if (GetTex()->GetTexture() == nullptr) GetTex()->SetTexture(tex, Vector2(0.5f, 0.5f), gameObject->GetOrder());
+	if (GetTex()->GetTexture() == nullptr) GetTex()->SetTexture(tex, Vector2(0.5f, 0.5f), gameObject->GetOrder(), GetTex()->GetSize());
 }
 
 void Button::SetText(std::string txt)
@@ -44,6 +44,8 @@ void Button::OnPointerDown(PointerData)
 void Button::OnPointerUp(PointerData p)
 {
 	if (tex != nullptr) GetTex()->SetTexture(tex);
-	if (p.button == 0 && mouseDown) onMouseClick();
+	if (p.button == 0 && mouseDown) {
+		if (onMouseClick != nullptr) onMouseClick();
+	}
 	mouseDown = false;
 }

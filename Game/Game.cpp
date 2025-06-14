@@ -22,7 +22,7 @@ void load()
 
 	SceneManager::GetInstance().CreateScene("Demo");
 
-	GameObject::Create("GameManager")->AddComponent<GameManager>()->Init();
+	GameObject::Create("GameManager")->AddComponent<GameManager>()->InitMenu();
 }
 int main(int, char* []) {
 	Minigin engine("../Data/");

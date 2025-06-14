@@ -31,10 +31,19 @@ public:
 	}
 	void AddAudioQueue(const char* str, float volume) {
 		if (volume > 1) volume = 1;
-		Mix_Volume(-1, static_cast<int>(volume * MIX_MAX_VOLUME));
+		Mix_Volume(-1, static_cast<int>(volume * globalVolume * MIX_MAX_VOLUME));
 
 		std::lock_guard<std::mutex> lock(mutex);
 		queue.emplace_back(str);
+	}
+
+	void SetVolume(float volume) {
+		globalVolume = volume;
+		if (globalVolume > 1) globalVolume = 1;
+		if (globalVolume < 0) globalVolume = 0;
+	}
+	float GetVolume() {
+		return globalVolume;
 	}
 private:
 	
@@ -60,7 +69,7 @@ private:
 					if (PullQueue(str)) {
 						PlayMusic(str.data());
 					}
-					std::this_thread::sleep_for(std::chrono::milliseconds(100));
+					std::this_thread::sleep_for(std::chrono::milliseconds(10));
 				}
 			}
 		};
@@ -73,7 +82,7 @@ private:
 	std::vector<std::string_view> queue{};
 	std::mutex mutex{};
 	bool running{ true };
-
+	float globalVolume{ 1 };
 };
 
 SDLAudio::SDLAudio() : Audio()
@@ -89,6 +98,16 @@ void SDLAudio::PlayAudio(const char* file, const float volume)
 {
 	file; volume;
 	audioImpl->AddAudioQueue(file, volume);
+}
+
+void SDLAudio::SetVolume(const float volume)
+{
+	audioImpl->SetVolume(volume);
+}
+
+float SDLAudio::GetVolume()
+{
+	return audioImpl->GetVolume();
 }
 
 Audio::Audio()

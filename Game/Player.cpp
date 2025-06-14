@@ -8,6 +8,8 @@
 #include "EventTypes.h"
 #include "GameManager.h"
 
+#include "Console.h"
+
 void Player::Awake()
 {
 }
@@ -16,52 +18,70 @@ void Player::Start()
 {
 	//id = SceneManager::GetInstance().curScene->FindObjCount([this](GameObject* obj) {return obj->GetComponent<Player>() != nullptr; }) - 1;
 	//tex = gameObject->AddComponent<TextureRenderer>();
+}
+
+void Player::Init(int playerId, int phealth, int plives)
+{
+	this->id = playerId;
+	this->health = phealth;
+	this->lives = plives;
+
 	tex = GameObject::Create("Tank Texture")->AddComponent<TextureRenderer>();
 	tex->gameObject->SetParent(gameObject);
-	tex->SetTexture("Player.png", Vector2(0.5f,0.5f), 5);
-	texSize = tex->GetSize().x/2;
+	tex->SetTexture("Player.png", Vector2(0.5f, 0.5f), 5);
+	texSize = tex->GetSize().x / 2;
 	barrelTex = GameObject::Create("Player Barrel")->AddComponent<TextureRenderer>();
 	barrelTex->gameObject->SetParent(gameObject);
 	barrelTex->SetTexture("TankBarrel.png", Vector2(0.2f, 0.5f), 6);
 
-	gameObject->transform->localScale = Vector2(1.3f,1.3f);
+	gameObject->transform->localScale = Vector2(1.3f, 1.3f);
 
-	if (id == 0) 
+	if (id == 0)
 	{
 		InputManager::GetInstance().RegisterCommand(new PlayerMoveCommand(gameObject, SDLK_d, Vector3(speed, 0, 0), Direction::Right));
 		InputManager::GetInstance().RegisterCommand(new PlayerMoveCommand(gameObject, SDLK_a, Vector3(-speed, 0, 0), Direction::Left));
-		InputManager::GetInstance().RegisterCommand(new PlayerMoveCommand(gameObject, SDLK_w, Vector3(0,-speed, 0), Direction::Up));
+		InputManager::GetInstance().RegisterCommand(new PlayerMoveCommand(gameObject, SDLK_w, Vector3(0, -speed, 0), Direction::Up));
 		InputManager::GetInstance().RegisterCommand(new PlayerMoveCommand(gameObject, SDLK_s, Vector3(0, speed, 0), Direction::Down));
+		InputManager::GetInstance().RegisterCommand(new BarrelCommand(gameObject, SDLK_LEFT, true));
+		InputManager::GetInstance().RegisterCommand(new BarrelCommand(gameObject, SDLK_RIGHT, false));
 		InputManager::GetInstance().RegisterCommand(new ShootCommand(gameObject, SDLK_SPACE, 1));
-		InputManager::GetInstance().RegisterCommand(new ScoreCommand(gameObject, SDLK_z, 10));
+		if (GameManager::GetInstance().GetMode() == GameMode::Solo) {
+			InputManager::GetInstance().RegisterCommand(new PlayerMoveCommand(gameObject, GamePad::DPad_Right, Vector3(speed, 0, 0), Direction::Right));
+			InputManager::GetInstance().RegisterCommand(new PlayerMoveCommand(gameObject, GamePad::DPad_Left, Vector3(-speed, 0, 0), Direction::Left));
+			InputManager::GetInstance().RegisterCommand(new PlayerMoveCommand(gameObject, GamePad::DPad_Up, Vector3(0, -speed, 0), Direction::Up));
+			InputManager::GetInstance().RegisterCommand(new PlayerMoveCommand(gameObject, GamePad::DPad_Down, Vector3(0, speed, 0), Direction::Down));
+			InputManager::GetInstance().RegisterCommand(new BarrelCommand(gameObject, GamePad::None, true));
+			InputManager::GetInstance().RegisterCommand(new ShootCommand(gameObject, GamePad::Right_Trigger, 1));
+		}
 	}
-	else if (id == 1) 
+	else if (id == 1)
 	{
+		tex->SetTexture("Player2.png");
+		barrelTex->SetTexture("TankBarrel2.png");
+		//
 		InputManager::GetInstance().RegisterCommand(new PlayerMoveCommand(gameObject, GamePad::DPad_Right, Vector3(speed, 0, 0), Direction::Right));
 		InputManager::GetInstance().RegisterCommand(new PlayerMoveCommand(gameObject, GamePad::DPad_Left, Vector3(-speed, 0, 0), Direction::Left));
 		InputManager::GetInstance().RegisterCommand(new PlayerMoveCommand(gameObject, GamePad::DPad_Up, Vector3(0, -speed, 0), Direction::Up));
 		InputManager::GetInstance().RegisterCommand(new PlayerMoveCommand(gameObject, GamePad::DPad_Down, Vector3(0, speed, 0), Direction::Down));
-		InputManager::GetInstance().RegisterCommand(new ShootCommand(gameObject, GamePad::X, 1));
-		InputManager::GetInstance().RegisterCommand(new ScoreCommand(gameObject, GamePad::A, 10));
+		InputManager::GetInstance().RegisterCommand(new BarrelCommand(gameObject, GamePad::None, true));
+		InputManager::GetInstance().RegisterCommand(new ShootCommand(gameObject, GamePad::Right_Trigger, 1));
+		//InputManager::GetInstance().RegisterCommand(new ScoreCommand(gameObject, GamePad::A, 10));
 	}
-
-	health = 3;
 
 	//should this go somewhere else?
 	subject = std::make_unique<Subject>();
-	TextObject* text = GameObject::Create(std::string("PlayerUI" + id))->AddComponent<TextObject>();
-	text->SetText("#lives: " + std::to_string(health) + std::to_string(score), ResourceManager::GetInstance().LoadFont("Lingua.otf", 30));
+	ui = GameObject::Create(std::string("PlayerUI" + id));
 
-	if (id == 0) 
+	if (id == 0)
 	{
-		text->gameObject->transform->position = Vector3(5, 100, 0);
+		ui->transform->position = Vector2(-200, -350);
 	}
-	else if (id == 1) 
+	else if (id == 1)
 	{
-		text->gameObject->transform->position = Vector3(5, 180, 0);
+		ui->transform->position = Vector2(200, -350);
 	}
 
-	PlayerUI* obs = text->gameObject->AddComponent<PlayerUI>();
+	PlayerUI* obs = ui->AddComponent<PlayerUI>();
 	obs->Init(this);
 	subject->RegisterObserver(obs);
 
@@ -70,30 +90,23 @@ void Player::Start()
 	EventManager::GetInstance().AddListener<EventType>(obs->gameObject, obs, EventType::Player_Hurt);
 }
 
-void Player::Update()
+Player::~Player()
 {
-	if (InputManager::GetInstance().KeyPressed(SDLK_LEFT)) 
-	{
-		TurnBarrelLeft();
-	}
-	if (InputManager::GetInstance().KeyPressed(SDLK_RIGHT)) 
-	{
-		TurnBarrelRight();
-	}
-	//temp
-	//if (InputManager::GetInstance().KeyDown(SDLK_c)) {
-	//	TakeDamage(1);
-	//}
-	//if (InputManager::GetInstance().KeyDown(SDLK_z)) {
-	//	IncreaseScore(10);
-	//}
+	EventManager::GetInstance().RemoveListener(gameObject);
+	EventManager::GetInstance().RemoveListener(ui);
+	GameObject::Delete(ui);
 }
 
-void Player::Init(int playerId, int phealth, int plives)
+void Player::Spawn()
 {
-	this->id = playerId;
-	this->health = phealth;
-	this->lives = plives;
+	gameObject->SetActive(true);
+	isDead = false;
+	health = 1;
+}
+
+void Player::Update()
+{
+	GameManager::GetInstance().CheckDiamond(gameObject);
 }
 
 void Player::TurnBarrelLeft()
@@ -106,6 +119,13 @@ void Player::TurnBarrelRight()
 {
 	barrelTex->gameObject->transform->localRotation += BARREL_ROT_SPEED * Time::deltaTime;
 	if (barrelTex->gameObject->transform->localRotation > 360) barrelTex->gameObject->transform->localRotation -= 360;
+}
+
+void Player::SetBarrelDir(const Vector2& barrelDir)
+{
+	float rot = Vector2().AngleDeg(Vector2(), barrelDir);
+	Console::GetInstance().Log(std::to_string(rot));
+	barrelTex->gameObject->transform->localRotation = rot;
 }
 
 void Player::SetDirection(Direction direction)
@@ -142,6 +162,7 @@ bool Player::CheckCollision(const Vector3& pos, const float unitCol)
 
 void Player::Shoot()
 {
+	if (IsDead()) return;
 	Bullet* bullet = GameObject::Create("Player Bullet")->AddComponent<Bullet>();
 	bullet->Init(gameObject->transform->GetPosition(), barrelTex->gameObject->transform->localRotation, "PlayerShell.png");
 	bullet->SetOwner(this);
@@ -160,7 +181,6 @@ void Player::TakeDamage(int dmg)
 	{
 		health -= dmg;
 		//subject->Notify(Event::Player_Hurt, EventArgs({id, health}));
-		EventManager::GetInstance().SendMessage<EventType>(EventType::Player_Hurt, EventArgs({ uint16_t(GetId()), health }));
 		if (health <= 0) {
 			Die();
 		}
@@ -169,6 +189,12 @@ void Player::TakeDamage(int dmg)
 
 void Player::Die()
 {
+	isDead = true;
+
+	lives--;
+	gameObject->SetActive(false);
+	GameManager::GetInstance().NotifyPlayerDeath(this);
+	EventManager::GetInstance().SendMessage<EventType>(EventType::Player_Hurt, EventArgs({ uint16_t(GetId()), lives }));
 	//subject->Notify(Event::Player_Die, EventArgs({id}));
 }
 
@@ -220,9 +246,17 @@ void ShootCommand::ExecuteDown()
 	player->Shoot();
 }
 
-void ScoreCommand::ExecuteDown()
+void BarrelCommand::ExecutePressed()
 {
-	// temp, example: in other class to send depending on which player did something
-	EventManager::GetInstance().SendMessage<EventType>(EventType::Score_Increase, EventArgs({uint16_t(player->GetId()), 100}));
-	//player->IncreaseScore(score);
+	if (isLeft) {
+		player->TurnBarrelLeft();
+	}
+	else {
+		player->TurnBarrelRight();
+	}
+}
+
+void BarrelCommand::MoveRThumb(const Vector2& thumb)
+{
+	player->SetBarrelDir(thumb);
 }

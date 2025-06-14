@@ -15,7 +15,8 @@ public:
 	void HandleEvent(Event e, EventArgs args) override;
 
 private:
-	TextObject* text{nullptr};
+	TextObject* scoreText{nullptr};
+	TextObject* livesText{ nullptr };
 	//keep tabs
 	Player* playerPtr{ nullptr };
 };

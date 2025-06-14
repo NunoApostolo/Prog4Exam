@@ -18,6 +18,7 @@ public:
 	Font& operator= (const Font&) = delete;
 	Font& operator= (const Font&&) = delete;
 	unsigned int size;
+	std::string file;
 private:
 	_TTF_Font* m_font;
 };

@@ -13,6 +13,7 @@ void EventManager::Update()
 	while (PullQueue(e, args))
 	{
 		for (size_t idx{ 0 }; idx < eventHandlers.size(); idx++) {
+
 			if (eventHandlers[idx]->HasEventID(static_cast<uint16_t>(e))) {
 				if (e >= Event::End) {
 					eventHandlers[idx]->HandleEvent(static_cast<Event>(static_cast<uint16_t>(e)), args);
@@ -20,7 +21,7 @@ void EventManager::Update()
 				else {
 					eventHandlers[idx]->HandleEvent(e, args);
 				}
-			} 
+			}
 		}
 	}
 }

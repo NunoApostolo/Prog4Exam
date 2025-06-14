@@ -14,31 +14,32 @@ public:
 	static std::unique_ptr<WanderState> wandering;
 	static std::unique_ptr<ChaseState> chasing;
 
-	void SetEnemy(Enemy* enemy);
-	virtual void Update() = 0;
+	virtual void Update(Enemy* owner) = 0;
 protected:
-	Enemy* owner;
+	//Enemy* owner;
 
 };
 class IdleState : public BaseEnemyState {
 public:
-	void Update() override;
+	void Update(Enemy* owner) override;
 };
 class WanderState : public BaseEnemyState {
 public:
-	void Update() override;
+	void Update(Enemy* owner) override;
 };
 class ChaseState : public BaseEnemyState {
 public:
-	void Update() override;
+	void Update(Enemy* owner) override;
 private:
 	float shootTimer{ 2.f };
 };
 
 class Enemy : public BaseComponent
 {
+	friend class ChaseState;
 public:
 	void Start() override;
+	virtual void Init() = 0;
 	void Update() override;
 	void UpdateMovePath();
 	void SetDirection();
@@ -48,11 +49,11 @@ public:
 	void ClearPath();
 	int GetPathCount();
 
-	void Shoot();
+	virtual void Shoot() = 0;
 	void TakeDamage(int dmg, Player* player);
 
 	bool CheckCollision(const Vector3& pos, const float unitCol);
-private:
+protected:
 	BaseEnemyState* curState{ nullptr };
 	TextureRenderer* tankTex{ nullptr };
 	float texSize{};
@@ -62,6 +63,19 @@ private:
 	Direction dir{Direction::None};
 	std::vector<Vector3> path{};
 
-	const float SPEED{100};
+	float speed{100};
 };
 
+class TankEnemy : public Enemy {
+public: 
+	void Init() override;
+	void Shoot() override;
+};
+
+class MeleeEnemy : public Enemy {
+public:
+	void Init() override;
+	void Shoot() override {}
+
+protected:
+};
