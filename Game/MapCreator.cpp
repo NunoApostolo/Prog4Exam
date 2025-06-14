@@ -32,8 +32,12 @@ void MapCreator::LoadMap(const std::string& path, const float& size)
 	dia->gameObject->SetActive(true);
 	mapObj->SetActive(true);
 
-	std:: string fullpath = "../Data/Maps/" + path;
+	std::string fullpath = "../Data/Maps/" + path;
 	//const auto filename = std::filesystem::path(fullpath).filename().string();
+
+	if (!std::filesystem::exists(fullpath)) {
+		fullpath = fullpath.substr(3);
+	}
 	std::ifstream ifStream{ fullpath };
 
 	if (!ifStream) {

@@ -590,7 +590,10 @@ void GameManager::RemoveBullet(Bullet* bullet)
 
 void GameManager::ReadHighScores()
 {
-	const std::string PATH{ "../Data/Scores.txt" };
+	std::string PATH{ "../Data/Scores.txt" };
+	if (!std::filesystem::exists(PATH)) {
+		PATH = PATH.substr(3);
+	}
 	std::ifstream ifStream{ PATH };
 
 	if (!ifStream) {
@@ -619,7 +622,10 @@ void GameManager::ReadHighScores()
 
 void GameManager::WriteHighScore()
 {
-	const std::string PATH{ "../Data/Scores.txt" };
+	std::string PATH{ "../Data/Scores.txt" };
+	if (!std::filesystem::exists(PATH)) {
+		PATH = PATH.substr(3);
+	}
 
 	scores.emplace_back(std::pair<std::string, int>(scoreName, endScore));
 	std::sort(scores.begin(), scores.end(), [&](std::pair<std::string, int>& p1, std::pair<std::string, int>& p2) {
