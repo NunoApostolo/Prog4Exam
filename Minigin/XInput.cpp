@@ -1,6 +1,7 @@
 //#if _WIN32
 //#define _X86_
 //#else
+#pragma once
 //#define _AMD64_
 //#endif 
 
@@ -20,8 +21,8 @@
 #include "Console.h"
 
 class XInput::XInputImpl {
-	XINPUT_STATE state; // 4
-	XINPUT_STATE prevState;
+    XINPUT_STATE state{}; // 4
+    XINPUT_STATE prevState{};
 
     std::vector<XINPUT_STATE> states{ std::vector<XINPUT_STATE>(XUSER_MAX) };
     std::vector<XINPUT_STATE> prevStates{ std::vector<XINPUT_STATE> (XUSER_MAX)};
@@ -49,8 +50,8 @@ public:
         }
     }
     void ProcessCommand(Command* command) {
-        for (int idx{ 0 }; idx < states.size(); ++idx) {
-            if (command->GetUser() != idx) continue;
+        for (size_t idx{ 0 }; idx < states.size(); ++idx) {
+            if (command->GetUser() != static_cast<int>(idx)) continue;
             if ((states[idx].Gamepad.wButtons ^ prevStates[idx].Gamepad.wButtons) & command->GetBtn() && states[idx].Gamepad.wButtons & command->GetBtn()) {
                 command->ExecuteDown();
             }

@@ -1,3 +1,4 @@
+#pragma once
 #include "GameManager.h"
 #include "InputManager.h"
 #include "ServiceLocator.h"
@@ -80,8 +81,8 @@ void GameManager::InitMenu()
 	scoreListPrtn->transform->localPosition = Vector2(-200, -350);
 
 	Vector2 size{};
-	for (int y{ 0 }; y < alphabet.size(); ++y) {
-		for (int x{ 0 }; x < alphabet[y].size(); ++x) {
+	for (size_t y{ 0 }; y < alphabet.size(); ++y) {
+		for (size_t x{ 0 }; x < alphabet[y].size(); ++x) {
 			std::string ch{ alphabet[y][x] };
 			if (alphabet[y][x] == '\n') ch = "RETURN";
 			if (alphabet[y][x] == '\0') ch = "DONE";
@@ -389,9 +390,9 @@ void GameManager::MoveToLetter(int x, int y)
 	if (index < 0) {
 		if (x != 0) index = (static_cast<int>(scorePrtn->childrenPtr[0]->childrenPtr.size()) - 1);
 		if (y != 0) index += static_cast<int>(alphabet[0].size()) * static_cast<int>(alphabet.size());
-		if (index >= scorePrtn->childrenPtr[0]->childrenPtr.size()) index -= static_cast<int>(alphabet[0].size());
+		if (index >= static_cast<int>(scorePrtn->childrenPtr[0]->childrenPtr.size())) index -= static_cast<int>(alphabet[0].size());
 	}
-	if (index >= scorePrtn->childrenPtr[0]->childrenPtr.size()) {
+	if (index >= static_cast<int>(scorePrtn->childrenPtr[0]->childrenPtr.size())) {
 		if (x != 0) index = 0;
 		if (y != 0) index = (index % static_cast<int>(alphabet[0].size()));
 	}

@@ -1,3 +1,4 @@
+#pragma once
 #include "IUIHandler.h"
 
 bool IUIHandler::IsPointInTex(Vector2 , Vector2& )

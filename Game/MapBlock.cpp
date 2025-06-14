@@ -1,3 +1,4 @@
+#pragma once
 #include "MapBlock.h"
 #include "GameObject.h"
 #include "Console.h"

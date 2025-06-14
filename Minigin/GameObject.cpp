@@ -1,3 +1,4 @@
+#pragma once
 #include "GameObject.h"
 //#include "SpriteRenderer.h"
 //#include "Collider.h"

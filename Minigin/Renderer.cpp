@@ -1,3 +1,4 @@
+#pragma once
 #include <stdexcept>
 #include "Renderer.h"
 #include "SceneManager.h"

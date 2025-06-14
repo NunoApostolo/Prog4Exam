@@ -1,3 +1,4 @@
+#pragma once
 #include "utils.h"
 
 std::vector<std::string> utils::Split(std::string text, const std::string delimiter) {

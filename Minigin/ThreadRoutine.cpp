@@ -1,3 +1,4 @@
+#pragma once
 #include "ThreadRoutine.h"
 
 std::vector<std::thread> ThreadRoutine::routines{};

@@ -1,3 +1,4 @@
+#pragma once
 #include "IMouseHandler.h"
 #include "Camera.h"
 #include "SceneManager.h"

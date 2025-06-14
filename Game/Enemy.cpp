@@ -1,3 +1,4 @@
+#pragma once
 #include "Enemy.h"
 #include "InputManager.h"
 #include "GameManager.h"

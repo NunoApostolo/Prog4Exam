@@ -1,3 +1,4 @@
+#pragma once
 #include "Bullet.h"
 #include "GameObject.h"
 #include <math.h>

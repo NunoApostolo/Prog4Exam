@@ -1,3 +1,4 @@
+#pragma once
 #include <stdexcept>
 #include <SDL_ttf.h>
 #include "TextObject.h"

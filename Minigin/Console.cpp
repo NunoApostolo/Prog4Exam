@@ -1,3 +1,4 @@
+#pragma once
 #include "Console.h"
 
 void Console::Log(std::string string)

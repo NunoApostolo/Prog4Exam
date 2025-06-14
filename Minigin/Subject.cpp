@@ -1,3 +1,4 @@
+#pragma once
 #include "Subject.h"
 
 void Subject::RegisterObserver(Observer* observer)

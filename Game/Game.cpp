@@ -1,3 +1,4 @@
+#pragma once
 //#pragma comment(lib, "Minigin.lib")
 
 #include <windows.h>

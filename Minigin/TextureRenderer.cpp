@@ -1,3 +1,4 @@
+#pragma once
 #include "TextureRenderer.h"
 #include "GameObject.h"
 #include "SceneManager.h"

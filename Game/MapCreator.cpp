@@ -1,3 +1,4 @@
+#pragma once
 #include "MapCreator.h"
 #include <iostream>
 #include <fstream>

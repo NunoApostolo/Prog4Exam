@@ -1,3 +1,4 @@
+#pragma once
 #include "Audio.h"
 #include <SDL_mixer.h>
 #include "ResourceManager.h"

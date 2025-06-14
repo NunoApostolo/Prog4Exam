@@ -1,3 +1,4 @@
+#pragma once
 #include "BaseComponent.h"
 #include "GameObject.h" //...2 hrs... I AM GOING TO KILL SOMEONE!!!
 #include "Time.h"
